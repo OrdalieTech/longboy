@@ -1,8 +1,11 @@
 package backend
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"net/http"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -96,4 +99,57 @@ func ListActionChains(db *sql.DB) ([]ActionChain, error) {
 	}
 
 	return chains, nil
+}
+
+func ActivateActionChain(db *sql.DB, id string) error {
+	// Retrieve the action chain
+	chain, err := GetActionChain(db, id)
+	if err != nil {
+		return fmt.Errorf("failed to retrieve action chain: %v", err)
+	}
+
+	// Execute each trigger in the chain
+	for _, trigger := range chain.Triggers {
+		err := trigger.Exec()
+		if err != nil {
+			return fmt.Errorf("failed to execute trigger: %v", err)
+		}
+
+		// If there's a following action, execute it
+		if trigger.FollowingAction != nil {
+			err := executeAction(*trigger.FollowingAction)
+			if err != nil {
+				return fmt.Errorf("failed to execute following action: %v", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func executeAction(action Action) error {
+	// Create a new HTTP client
+	client := &http.Client{}
+
+	// Create a new request
+	req, err := http.NewRequest(action.Method, action.URL, bytes.NewBufferString(action.Body))
+	if err != nil {
+		return err
+	}
+
+	// Set headers
+	for key, value := range action.Headers {
+		req.Header.Set(key, value)
+	}
+
+	// Send the request
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// You can add additional logic here to handle the response if needed
+
+	return nil
 }
