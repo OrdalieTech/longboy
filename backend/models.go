@@ -1,12 +1,13 @@
 package backend
 
 type ActionChain struct {
-	ID      string   `json:"id"`
-	Webhook Trigger  `json:"webhook"`
-	Actions []Action `json:"actions"`
+	ID          string   `json:"id"`
+	WebhooksIDs []string `json:"webhook-ids"`
+	ActionIDs   []string `json:"action-ids"`
 }
 
 type HTTPDetails struct {
+	ID      string            `json:"id"`
 	URL     string            `json:"url"`
 	Method  string            `json:"method"`
 	Headers map[string]string `json:"headers"`
@@ -14,17 +15,20 @@ type HTTPDetails struct {
 }
 
 type Trigger struct {
+	ID   string       `json:"id"`
 	Type string       `json:"type"`
 	HTTP *HTTPDetails `json:"http,omitempty"`
 	// Add other trigger types as needed
 }
 
 type Action interface {
+	GetID() string
 	GetType() string
 	Execute() error
 }
 
 type HTTPAction struct {
+	ID   string      `json:"id"`
 	Type string      `json:"type"`
 	HTTP HTTPDetails `json:"http"`
 }
