@@ -1,16 +1,18 @@
-package main
+package api
 
 import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
-	"longboy/backend"
 	"net/http"
 	"strings"
+
+	backend "longboy/internal/database"
+	models "longboy/internal/models"
 )
 
-func setupRoutes(db *sql.DB) {
+func SetupRoutes(db *sql.DB) {
 	http.HandleFunc("/api/action-chains", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Received %s request to /api/action-chains", r.Method)
 		switch r.Method {
@@ -62,7 +64,7 @@ func handleListActionChains(db *sql.DB, w http.ResponseWriter) {
 
 func handleCreateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	log.Println("Handling create action chain request")
-	var chain backend.ActionChain
+	var chain models.ActionChain
 	err := json.NewDecoder(r.Body).Decode(&chain)
 	if err != nil {
 		log.Printf("Error decoding request body: %v", err)
@@ -93,7 +95,7 @@ func handleGetActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request, id
 }
 
 func handleUpdateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
-	var chain backend.ActionChain
+	var chain models.ActionChain
 	err := json.NewDecoder(r.Body).Decode(&chain)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -126,31 +128,4 @@ func handleActivateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Reques
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-}
-
-func main() {
-	// Initialize database
-	db, err := backend.InitDB("./db/longboy.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	// Set up API routes
-	setupRoutes(db)
-
-	// Serve static files from the src directory
-	fs := http.FileServer(http.Dir("./src"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-
-	// Catch-all route for debugging
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Received %s request to %s", r.Method, r.URL.Path)
-		http.Error(w, "Not found", http.StatusNotFound)
-	})
-
-	log.Println("Server starting on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal(err)
-	}
 }

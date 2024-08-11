@@ -1,0 +1,11 @@
+services:
+  longboy:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./db:/root/db
+    environment:
+      - DB_PATH=/root/db/longboy.db

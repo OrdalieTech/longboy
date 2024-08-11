@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	models "longboy/internal/models"
 	"net/http"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -31,7 +32,7 @@ func InitDB(dbPath string) (*sql.DB, error) {
 }
 
 // CreateActionChain inserts a new action chain into the database
-func CreateActionChain(db *sql.DB, chain ActionChain) error {
+func CreateActionChain(db *sql.DB, chain models.ActionChain) error {
 	data, err := json.Marshal(chain)
 	if err != nil {
 		return err
@@ -42,9 +43,9 @@ func CreateActionChain(db *sql.DB, chain ActionChain) error {
 }
 
 // GetActionChain retrieves an action chain from the database by ID
-func GetActionChain(db *sql.DB, id string) (ActionChain, error) {
+func GetActionChain(db *sql.DB, id string) (models.ActionChain, error) {
 	var data []byte
-	var chain ActionChain
+	var chain models.ActionChain
 
 	err := db.QueryRow("SELECT data FROM action_chains WHERE id = ?", id).Scan(&data)
 	if err != nil {
@@ -56,7 +57,7 @@ func GetActionChain(db *sql.DB, id string) (ActionChain, error) {
 }
 
 // UpdateActionChain updates an existing action chain in the database
-func UpdateActionChain(db *sql.DB, chain ActionChain) error {
+func UpdateActionChain(db *sql.DB, chain models.ActionChain) error {
 	data, err := json.Marshal(chain)
 	if err != nil {
 		return err
@@ -73,17 +74,17 @@ func DeleteActionChain(db *sql.DB, id string) error {
 }
 
 // ListActionChains retrieves all action chains from the database
-func ListActionChains(db *sql.DB) ([]ActionChain, error) {
+func ListActionChains(db *sql.DB) ([]models.ActionChain, error) {
 	rows, err := db.Query("SELECT data FROM action_chains")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var chains []ActionChain
+	var chains []models.ActionChain
 	for rows.Next() {
 		var data []byte
-		var chain ActionChain
+		var chain models.ActionChain
 
 		err := rows.Scan(&data)
 		if err != nil {
@@ -127,7 +128,7 @@ func ActivateActionChain(db *sql.DB, id string) error {
 	return nil
 }
 
-func executeAction(action Action) error {
+func executeAction(action models.Action) error {
 	// Create a new HTTP client
 	client := &http.Client{}
 
