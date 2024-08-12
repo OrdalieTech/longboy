@@ -16,16 +16,18 @@ type Context struct {
 type ActionChain struct {
 	ID      string   `json:"id"`
 	Trigger *Trigger `json:"trigger"`
+	Context *Context `json:"context"`
 }
 
 type Trigger struct {
-	Type            string            `json:"type"`
-	URL             string            `json:"url"`
-	Method          string            `json:"method"`
-	Headers         map[string]string `json:"headers"`
-	Body            string            `json:"body"`
-	ResultID        string            `json:"result_id,omitempty"`
-	FollowingAction *Action           `json:"followingAction"`
+	ID                string            `json:"id"`
+	Type              string            `json:"type"`
+	URL               string            `json:"url"`
+	Method            string            `json:"method"`
+	Headers           map[string]string `json:"headers"`
+	Body              string            `json:"body"`
+	ResultID          string            `json:"result_id,omitempty"`
+	FollowingActionID string            `json:"following_action_id,omitempty"`
 }
 
 func (t Trigger) Exec(ctx *Context) error {
@@ -55,133 +57,167 @@ func (t Trigger) Exec(ctx *Context) error {
 	return nil
 }
 
-type Action struct {
-	Type            string                 `json:"type"`
-	Main            map[string]interface{} `json:"main"`
-	ResultID        string                 `json:"result_id,omitempty"`
-	FollowingAction *Action                `json:"followingAction"`
+type Action interface {
+	GetID() string
+	GetType() string
+	Exec(ctx *Context) error
+	GetResultID() string
+	GetFollowingActionID() string
 }
 
-func (a *Action) Exec(ctx *Context) error {
-	var resultKey string
-	if a.ResultID != "" {
-		resultKey = a.ResultID
-	} else {
-		resultKey = a.Type + "_result"
+type HTTPAction struct {
+	ID                string            `json:"id"`
+	URL               string            `json:"url"`
+	Method            string            `json:"method"`
+	Headers           map[string]string `json:"headers"`
+	Body              string            `json:"body"`
+	ResultID          string            `json:"result_id,omitempty"`
+	FollowingActionID string            `json:"following_action_id,omitempty"`
+}
+
+func (h *HTTPAction) GetID() string {
+	return h.ID
+}
+
+func (h *HTTPAction) GetType() string {
+	return "http"
+}
+
+func (h *HTTPAction) Exec(ctx *Context) error {
+	client := &http.Client{}
+	req, err := http.NewRequest(h.Method, h.URL, bytes.NewBufferString(h.Body))
+	if err != nil {
+		return err
+	}
+	for key, value := range h.Headers {
+		req.Header.Set(key, value)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
 	}
 
-	switch a.Type {
-	case "http":
-		url, ok := a.Main["URL"].(string)
-		if !ok {
-			return fmt.Errorf("invalid URL in main data")
-		}
-		method, ok := a.Main["Method"].(string)
-		if !ok {
-			return fmt.Errorf("invalid Method in main data")
-		}
-		headers, ok := a.Main["Headers"].(map[string]interface{})
-		if !ok {
-			return fmt.Errorf("invalid Headers in main data")
-		}
-		body, ok := a.Main["Body"].(string)
-		if !ok {
-			return fmt.Errorf("invalid Body in main data")
-		}
-		client := &http.Client{}
-		req, err := http.NewRequest(method, url, bytes.NewBufferString(body))
-		if err != nil {
-			return err
-		}
-		for key, value := range headers {
-			strValue, ok := value.(string)
-			if !ok {
-				return fmt.Errorf("invalid header value for key %s", key)
-			}
-			req.Header.Set(key, strValue)
-		}
-		resp, err := client.Do(req)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		respBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		ctx.Results[resultKey] = string(respBody)
-		return nil
+	if h.ResultID != "" {
+		ctx.Results[h.ResultID] = string(respBody)
+	}
 
-	case "llm":
-		endpoint, ok := a.Main["Endpoint"].(string)
-		if !ok {
-			return fmt.Errorf("invalid Endpoint in main data")
-		}
-		model, ok := a.Main["Model"].(string)
-		if !ok {
-			return fmt.Errorf("invalid Model in main data")
-		}
-		prompt, ok := a.Main["Prompt"].(string)
-		if !ok {
-			return fmt.Errorf("invalid Prompt in main data")
-		}
-		parameters, ok := a.Main["Parameters"].(map[string]interface{})
-		if !ok {
-			return fmt.Errorf("invalid Parameters in main data")
-		}
-		payload := map[string]interface{}{
-			"model":      model,
-			"prompt":     prompt,
-			"parameters": parameters,
-		}
-		payloadBytes, err := json.Marshal(payload)
-		if err != nil {
-			return err
-		}
-		client := &http.Client{}
-		req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(payloadBytes))
-		if err != nil {
-			return err
-		}
-		req.Header.Set("Content-Type", "application/json")
-		resp, err := client.Do(req)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		respBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		ctx.Results[resultKey] = string(respBody)
-		return nil
+	return nil
+}
 
-	case "code":
-		language, ok := a.Main["Language"].(string)
-		if !ok {
-			return fmt.Errorf("invalid Language in main data")
-		}
-		sourceCode, ok := a.Main["SourceCode"].(string)
-		if !ok {
-			return fmt.Errorf("invalid SourceCode in main data")
-		}
-		var cmd *exec.Cmd
-		switch language {
-		case "python":
-			cmd = exec.Command("python", "-c", sourceCode)
-		case "bash":
-			cmd = exec.Command("bash", "-c", sourceCode)
-		default:
-			return fmt.Errorf("unsupported language: %s", language)
-		}
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf("execution failed: %s, output: %s", err, output)
-		}
-		ctx.Results[resultKey] = string(output)
-		return nil
+func (h *HTTPAction) GetResultID() string {
+	return h.ResultID
+}
 
+func (h *HTTPAction) GetFollowingActionID() string {
+	return h.FollowingActionID
+}
+
+type LLMAction struct {
+	ID                string                 `json:"id"`
+	Endpoint          string                 `json:"endpoint"`
+	Model             string                 `json:"model"`
+	Prompt            string                 `json:"prompt"`
+	Parameters        map[string]interface{} `json:"parameters"`
+	ResultID          string                 `json:"result_id,omitempty"`
+	FollowingActionID string                 `json:"following_action_id,omitempty"`
+}
+
+func (l *LLMAction) GetID() string {
+	return l.ID
+}
+
+func (l *LLMAction) GetType() string {
+	return "llm"
+}
+
+func (l *LLMAction) Exec(ctx *Context) error {
+	payload := map[string]interface{}{
+		"model":      l.Model,
+		"prompt":     l.Prompt,
+		"parameters": l.Parameters,
+	}
+	payloadBytes, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", l.Endpoint, bytes.NewBuffer(payloadBytes))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if l.ResultID != "" {
+		ctx.Results[l.ResultID] = string(respBody)
+	}
+
+	return nil
+}
+
+func (l *LLMAction) GetResultID() string {
+	return l.ResultID
+}
+
+func (l *LLMAction) GetFollowingActionID() string {
+	return l.FollowingActionID
+}
+
+type CodeAction struct {
+	ID                string `json:"id"`
+	Language          string `json:"language"`
+	SourceCode        string `json:"source_code"`
+	ResultID          string `json:"result_id,omitempty"`
+	FollowingActionID string `json:"following_action_id,omitempty"`
+}
+
+func (c *CodeAction) GetID() string {
+	return c.ID
+}
+
+func (c *CodeAction) GetType() string {
+	return "code"
+}
+
+func (c *CodeAction) Exec(ctx *Context) error {
+	var cmd *exec.Cmd
+	switch c.Language {
+	case "python":
+		cmd = exec.Command("python", "-c", c.SourceCode)
+	case "bash":
+		cmd = exec.Command("bash", "-c", c.SourceCode)
 	default:
-		return fmt.Errorf("unsupported action type: %s", a.Type)
+		return fmt.Errorf("unsupported language: %s", c.Language)
 	}
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("execution failed: %s, output: %s", err, output)
+	}
+
+	if c.ResultID != "" {
+		ctx.Results[c.ResultID] = string(output)
+	}
+
+	return nil
+}
+
+func (c *CodeAction) GetResultID() string {
+	return c.ResultID
+}
+
+func (c *CodeAction) GetFollowingActionID() string {
+	return c.FollowingActionID
 }

@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"longboy/api"
-	backend "longboy/internal/database"
+	"longboy/internal/database"
 )
 
 func main() {
 	// Initialize database
-	db, err := backend.InitDB("./db/longboy.db")
+	db, err := database.InitDB("./db/longboy.db")
 	if err != nil {
 		log.Fatal(err)
 	}
