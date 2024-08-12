@@ -2,16 +2,19 @@ FROM golang:1.22-alpine
 
 WORKDIR /app
 
-# Install Air and necessary build tools
+# Install necessary build tools and Air
 RUN go install github.com/air-verse/air@latest && \
     apk add --no-cache gcc build-base
 
-# Copy go mod files
+# Copy go mod files and download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the rest of the application
 COPY . .
+
+# Build the application to cache the build
+RUN go build -o /dev/null ./...
 
 EXPOSE 8080
 
