@@ -135,29 +135,21 @@ func ActivateActionChain(db *sql.DB, id string) error {
 		return fmt.Errorf("failed to execute trigger: %v", err)
 	}
 
-	if chain.Trigger.FollowingActionID != "" {
-		action, err := getActionByID(db, chain.Trigger.FollowingActionID)
-		if err != nil {
-			return fmt.Errorf("failed to execute following action: %v", err)
-		}
-		err = action.Exec(ctx)
+	if chain.Trigger.FollowingAction != nil {
+		err = (*chain.Trigger.FollowingAction).Exec(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to execute following action: %v", err)
 		}
 	}
 
 	// Execute following actions
-	nextActionID := chain.Trigger.FollowingActionID
-	for nextActionID != "" {
-		nextAction, err := getActionByID(db, nextActionID) // Assume this function retrieves the next action by ID
+	nextAction := chain.Trigger.FollowingAction
+	for nextAction != nil {
+		err = (*nextAction).Exec(ctx)
 		if err != nil {
 			return err
 		}
-		err = nextAction.Exec(ctx)
-		if err != nil {
-			return err
-		}
-		nextActionID = nextAction.GetFollowingActionID()
+		nextAction = (*nextAction).GetFollowingAction()
 	}
 
 	return nil

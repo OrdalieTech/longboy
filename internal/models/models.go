@@ -20,14 +20,13 @@ type ActionChain struct {
 }
 
 type Trigger struct {
-	ID                string            `json:"id"`
-	Type              string            `json:"type"`
-	URL               string            `json:"url"`
-	Method            string            `json:"method"`
-	Headers           map[string]string `json:"headers"`
-	Body              string            `json:"body"`
-	ResultID          string            `json:"result_id,omitempty"`
-	FollowingActionID string            `json:"following_action_id,omitempty"`
+	Type            string            `json:"type"`
+	URL             string            `json:"url"`
+	Method          string            `json:"method"`
+	Headers         map[string]string `json:"headers"`
+	Body            string            `json:"body"`
+	ResultID        string            `json:"result_id,omitempty"`
+	FollowingAction *Action           `json:"following_action,omitempty"`
 }
 
 func (t Trigger) Exec(ctx *Context) error {
@@ -58,25 +57,19 @@ func (t Trigger) Exec(ctx *Context) error {
 }
 
 type Action interface {
-	GetID() string
 	GetType() string
 	Exec(ctx *Context) error
 	GetResultID() string
-	GetFollowingActionID() string
+	GetFollowingAction() *Action
 }
 
 type HTTPAction struct {
-	ID                string            `json:"id"`
-	URL               string            `json:"url"`
-	Method            string            `json:"method"`
-	Headers           map[string]string `json:"headers"`
-	Body              string            `json:"body"`
-	ResultID          string            `json:"result_id,omitempty"`
-	FollowingActionID string            `json:"following_action_id,omitempty"`
-}
-
-func (h *HTTPAction) GetID() string {
-	return h.ID
+	URL             string            `json:"url"`
+	Method          string            `json:"method"`
+	Headers         map[string]string `json:"headers"`
+	Body            string            `json:"body"`
+	ResultID        string            `json:"result_id,omitempty"`
+	FollowingAction *Action           `json:"following_action,omitempty"`
 }
 
 func (h *HTTPAction) GetType() string {
@@ -113,18 +106,18 @@ func (h *HTTPAction) GetResultID() string {
 	return h.ResultID
 }
 
-func (h *HTTPAction) GetFollowingActionID() string {
-	return h.FollowingActionID
+func (h *HTTPAction) GetFollowingAction() *Action {
+	return h.FollowingAction
 }
 
 type LLMAction struct {
-	ID                string                 `json:"id"`
-	Endpoint          string                 `json:"endpoint"`
-	Model             string                 `json:"model"`
-	Prompt            string                 `json:"prompt"`
-	Parameters        map[string]interface{} `json:"parameters"`
-	ResultID          string                 `json:"result_id,omitempty"`
-	FollowingActionID string                 `json:"following_action_id,omitempty"`
+	ID              string                 `json:"id"`
+	Endpoint        string                 `json:"endpoint"`
+	Model           string                 `json:"model"`
+	Prompt          string                 `json:"prompt"`
+	Parameters      map[string]interface{} `json:"parameters"`
+	ResultID        string                 `json:"result_id,omitempty"`
+	FollowingAction *Action                `json:"following_action,omitempty"`
 }
 
 func (l *LLMAction) GetID() string {
@@ -172,16 +165,16 @@ func (l *LLMAction) GetResultID() string {
 	return l.ResultID
 }
 
-func (l *LLMAction) GetFollowingActionID() string {
-	return l.FollowingActionID
+func (l *LLMAction) GetFollowingAction() *Action {
+	return l.FollowingAction
 }
 
 type CodeAction struct {
-	ID                string `json:"id"`
-	Language          string `json:"language"`
-	SourceCode        string `json:"source_code"`
-	ResultID          string `json:"result_id,omitempty"`
-	FollowingActionID string `json:"following_action_id,omitempty"`
+	ID              string  `json:"id"`
+	Language        string  `json:"language"`
+	SourceCode      string  `json:"source_code"`
+	ResultID        string  `json:"result_id,omitempty"`
+	FollowingAction *Action `json:"following_action,omitempty"`
 }
 
 func (c *CodeAction) GetID() string {
@@ -218,6 +211,6 @@ func (c *CodeAction) GetResultID() string {
 	return c.ResultID
 }
 
-func (c *CodeAction) GetFollowingActionID() string {
-	return c.FollowingActionID
+func (c *CodeAction) GetFollowingAction() *Action {
+	return c.FollowingAction
 }
