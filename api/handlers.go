@@ -17,7 +17,7 @@ func SetupRoutes(db *sql.DB) {
 		case http.MethodPost:
 			handleCreateActionChain(db, w, r)
 		case http.MethodGet:
-			handleListActionChains(db, w)
+			handleListActionChains(db, w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -31,11 +31,11 @@ func SetupRoutes(db *sql.DB) {
 		}
 		switch r.Method {
 		case http.MethodGet:
-			handleGetActionChain(db, w, id)
+			handleGetActionChain(db, w, r, id)
 		case http.MethodPut:
-			handleUpdateActionChain(db, w, r)
+			handleUpdateActionChain(db, w, r, id)
 		case http.MethodDelete:
-			handleDeleteActionChain(db, w, id)
+			handleDeleteActionChain(db, w, r, id)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -62,7 +62,7 @@ func handleCreateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(chain)
 }
 
-func handleGetActionChain(db *sql.DB, w http.ResponseWriter, id string) {
+func handleGetActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
 
 	chain, err := database.GetActionChain(db, id)
 	if err != nil {
@@ -74,7 +74,7 @@ func handleGetActionChain(db *sql.DB, w http.ResponseWriter, id string) {
 	json.NewEncoder(w).Encode(chain)
 }
 
-func handleUpdateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func handleUpdateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
 	var chain models.ActionChain
 	err := json.NewDecoder(r.Body).Decode(&chain)
 	if err != nil {
@@ -92,7 +92,7 @@ func handleUpdateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusOK)
 }
 
-func handleDeleteActionChain(db *sql.DB, w http.ResponseWriter, id string) {
+func handleDeleteActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
 	err := database.DeleteActionChain(db, id)
 	if err != nil {
 		log.Printf("Error deleting action chain: %v", err)
@@ -103,7 +103,7 @@ func handleDeleteActionChain(db *sql.DB, w http.ResponseWriter, id string) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func handleListActionChains(db *sql.DB, w http.ResponseWriter) {
+func handleListActionChains(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	chains, err := database.ListActionChains(db)
 	if err != nil {
 		log.Printf("Error listing action chains: %v", err)

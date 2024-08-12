@@ -7,6 +7,5 @@ services:
       - "8080:8080"
     volumes:
       - ./db:/root/db
-      - .:/app
     environment:
       - DB_PATH=/root/db/longboy.db

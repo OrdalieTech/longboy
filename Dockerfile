@@ -15,7 +15,6 @@ WORKDIR /root/
 
 COPY --from=builder /app/server .
 COPY web ./web
-COPY configs ./configs
 
 EXPOSE 8080
 
