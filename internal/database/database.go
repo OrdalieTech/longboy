@@ -1,14 +1,11 @@
-package backend
+package database
 
 import (
-	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	models "longboy/internal/models"
-	"net/http"
 
-	_ "github.com/mattn/go-sqlite3"
+	models "longboy/internal/models"
 )
 
 func InitDB(dbPath string) (*sql.DB, error) {
@@ -103,54 +100,24 @@ func ListActionChains(db *sql.DB) ([]models.ActionChain, error) {
 }
 
 func ActivateActionChain(db *sql.DB, id string) error {
-	// Retrieve the action chain
 	chain, err := GetActionChain(db, id)
 	if err != nil {
 		return fmt.Errorf("failed to retrieve action chain: %v", err)
 	}
 
-	// Execute each trigger in the chain
-	for _, trigger := range chain.Triggers {
-		err := trigger.Exec()
+	ctx := &models.Context{Results: make(map[string]interface{})}
+
+	err = chain.Trigger.Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to execute trigger: %v", err)
+	}
+
+	if chain.Trigger.FollowingAction != nil {
+		err = chain.Trigger.FollowingAction.Exec(ctx)
 		if err != nil {
-			return fmt.Errorf("failed to execute trigger: %v", err)
-		}
-
-		// If there's a following action, execute it
-		if trigger.FollowingAction != nil {
-			err := executeAction(*trigger.FollowingAction)
-			if err != nil {
-				return fmt.Errorf("failed to execute following action: %v", err)
-			}
+			return fmt.Errorf("failed to execute following action: %v", err)
 		}
 	}
-
-	return nil
-}
-
-func executeAction(action models.Action) error {
-	// Create a new HTTP client
-	client := &http.Client{}
-
-	// Create a new request
-	req, err := http.NewRequest(action.Method, action.URL, bytes.NewBufferString(action.Body))
-	if err != nil {
-		return err
-	}
-
-	// Set headers
-	for key, value := range action.Headers {
-		req.Header.Set(key, value)
-	}
-
-	// Send the request
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// You can add additional logic here to handle the response if needed
 
 	return nil
 }

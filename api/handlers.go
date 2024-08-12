@@ -6,28 +6,25 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
-	backend "longboy/internal/database"
-	models "longboy/internal/models"
+	"longboy/internal/database"
+	"longboy/internal/models"
 )
 
 func SetupRoutes(db *sql.DB) {
-	http.HandleFunc("/api/action-chains", func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Received %s request to /api/action-chains", r.Method)
+	http.HandleFunc("/actionchains", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case http.MethodGet:
-			handleListActionChains(db, w)
 		case http.MethodPost:
 			handleCreateActionChain(db, w, r)
+		case http.MethodGet:
+			handleListActionChains(db, w, r)
 		default:
-			log.Printf("Method %s not allowed for /api/action-chains", r.Method)
-			http.Error(w, fmt.Sprintf("Method %s not allowed", r.Method), http.StatusMethodNotAllowed)
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
-	http.HandleFunc("/api/action-chains/", func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/api/action-chains/")
+	http.HandleFunc("/actionchains/", func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Path[len("/actionchains/"):]
 		switch r.Method {
 		case http.MethodGet:
 			handleGetActionChain(db, w, r, id)
@@ -39,40 +36,17 @@ func SetupRoutes(db *sql.DB) {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-
-	http.HandleFunc("/api/action-chains/activate/", func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Received %s request to %s", r.Method, r.URL.Path)
-		if r.Method != http.MethodPost {
-			log.Printf("Method %s not allowed for /api/action-chains/activate/", r.Method)
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		id := strings.TrimPrefix(r.URL.Path, "/api/action-chains/activate/")
-		handleActivateActionChain(db, w, r, id)
-	})
-}
-
-func handleListActionChains(db *sql.DB, w http.ResponseWriter) {
-	chains, err := backend.ListActionChains(db)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(chains)
 }
 
 func handleCreateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	log.Println("Handling create action chain request")
 	var chain models.ActionChain
 	err := json.NewDecoder(r.Body).Decode(&chain)
 	if err != nil {
-		log.Printf("Error decoding request body: %v", err)
-		http.Error(w, fmt.Sprintf("Invalid request body: %v", err), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = backend.CreateActionChain(db, chain)
+	err = database.CreateActionChain(db, chain)
 	if err != nil {
 		log.Printf("Error creating action chain: %v", err)
 		http.Error(w, fmt.Sprintf("Error creating action chain: %v", err), http.StatusInternalServerError)
@@ -85,7 +59,7 @@ func handleCreateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request)
 }
 
 func handleGetActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
-	chain, err := backend.GetActionChain(db, id)
+	chain, err := database.GetActionChain(db, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -102,7 +76,7 @@ func handleUpdateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	err = backend.UpdateActionChain(db, chain)
+	err = database.UpdateActionChain(db, chain)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -112,7 +86,7 @@ func handleUpdateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request,
 }
 
 func handleDeleteActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
-	err := backend.DeleteActionChain(db, id)
+	err := database.DeleteActionChain(db, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -121,11 +95,12 @@ func handleDeleteActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request,
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func handleActivateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
-	err := backend.ActivateActionChain(db, id)
+func handleListActionChains(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	chains, err := database.ListActionChains(db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+
+	json.NewEncoder(w).Encode(chains)
 }
