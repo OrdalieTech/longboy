@@ -70,36 +70,6 @@ func SetupRoutes(db *sql.DB) {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
-
-	// Trigger routes
-	http.HandleFunc("/triggers", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodPost:
-			handleCreateTrigger(db, w, r)
-		case http.MethodGet:
-			handleListTriggers(db, w)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	http.HandleFunc("/triggers/", func(w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Path[len("/triggers/"):]
-		if id == "" {
-			http.Error(w, "ID is required", http.StatusBadRequest)
-			return
-		}
-		switch r.Method {
-		case http.MethodGet:
-			handleGetTrigger(db, w, id)
-		case http.MethodPut:
-			handleUpdateTrigger(db, w, r)
-		case http.MethodDelete:
-			handleDeleteTrigger(db, w, id)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
 }
 
 // ActionChain Handlers
@@ -244,76 +214,4 @@ func handleListActions(db *sql.DB, w http.ResponseWriter) {
 	}
 
 	json.NewEncoder(w).Encode(actions)
-}
-
-// Trigger Handlers
-func handleCreateTrigger(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	var trigger models.Trigger
-	err := json.NewDecoder(r.Body).Decode(&trigger)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = database.CreateTrigger(db, trigger)
-	if err != nil {
-		log.Printf("Error creating trigger: %v", err)
-		http.Error(w, fmt.Sprintf("Error creating trigger: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	log.Println("Trigger created successfully")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(trigger)
-}
-
-func handleGetTrigger(db *sql.DB, w http.ResponseWriter, id string) {
-	trigger, err := database.GetTrigger(db, id)
-	if err != nil {
-		log.Printf("Error getting trigger: %v", err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	json.NewEncoder(w).Encode(trigger)
-}
-
-func handleUpdateTrigger(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	var trigger models.Trigger
-	err := json.NewDecoder(r.Body).Decode(&trigger)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = database.UpdateTrigger(db, trigger)
-	if err != nil {
-		log.Printf("Error updating trigger: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-}
-
-func handleDeleteTrigger(db *sql.DB, w http.ResponseWriter, id string) {
-	err := database.DeleteTrigger(db, id)
-	if err != nil {
-		log.Printf("Error deleting trigger: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusNoContent)
-}
-
-func handleListTriggers(db *sql.DB, w http.ResponseWriter) {
-	triggers, err := database.ListTriggers(db)
-	if err != nil {
-		log.Printf("Error listing triggers: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(triggers)
 }

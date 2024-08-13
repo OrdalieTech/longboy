@@ -36,17 +36,6 @@ func InitDB(dbPath string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	// Create triggers table with a single data JSON column
-	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS triggers (
-			id TEXT PRIMARY KEY,
-			data JSON NOT NULL
-		)
-	`)
-	if err != nil {
-		return nil, err
-	}
-
 	return db, nil
 }
 
@@ -242,64 +231,4 @@ func ListActions(db *sql.DB) ([]models.Action, error) {
 	}
 
 	return actions, nil
-}
-
-// CreateTrigger creates a new trigger in the database
-func CreateTrigger(db *sql.DB, trigger models.Trigger) error {
-	_, err := db.Exec(`
-		INSERT INTO triggers (id, type, url, method, headers, body, result_id, following_action_id)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-	`, trigger.ID, trigger.Type, trigger.URL, trigger.Method, trigger.Headers, trigger.Body, trigger.ResultID, trigger.FollowingActionID)
-	return err
-}
-
-// GetTrigger retrieves a trigger from the database by ID
-func GetTrigger(db *sql.DB, id string) (models.Trigger, error) {
-	var trigger models.Trigger
-	err := db.QueryRow(`
-		SELECT id, type, url, method, headers, body, result_id, following_action_id
-		FROM triggers
-		WHERE id = ?
-	`, id).Scan(&trigger.ID, &trigger.Type, &trigger.URL, &trigger.Method, &trigger.Headers, &trigger.Body, &trigger.ResultID, &trigger.FollowingActionID)
-	if err != nil {
-		return trigger, err
-	}
-	return trigger, nil
-}
-
-// UpdateTrigger updates an existing trigger in the database
-func UpdateTrigger(db *sql.DB, trigger models.Trigger) error {
-	_, err := db.Exec(`
-		UPDATE triggers
-		SET type = ?, url = ?, method = ?, headers = ?, body = ?, result_id = ?, following_action_id = ?
-		WHERE id = ?
-	`, trigger.Type, trigger.URL, trigger.Method, trigger.Headers, trigger.Body, trigger.ResultID, trigger.FollowingActionID, trigger.ID)
-	return err
-}
-
-// DeleteTrigger removes a trigger from the database by ID
-func DeleteTrigger(db *sql.DB, id string) error {
-	_, err := db.Exec("DELETE FROM triggers WHERE id = ?", id)
-	return err
-}
-
-// ListTriggers retrieves all triggers from the database
-func ListTriggers(db *sql.DB) ([]models.Trigger, error) {
-	rows, err := db.Query("SELECT id, type, url, method, headers, body, result_id, following_action_id FROM triggers")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var triggers []models.Trigger
-	for rows.Next() {
-		var trigger models.Trigger
-		err := rows.Scan(&trigger.ID, &trigger.Type, &trigger.URL, &trigger.Method, &trigger.Headers, &trigger.Body, &trigger.ResultID, &trigger.FollowingActionID)
-		if err != nil {
-			return nil, err
-		}
-		triggers = append(triggers, trigger)
-	}
-
-	return triggers, nil
 }

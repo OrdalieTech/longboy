@@ -33,3 +33,4 @@ go.work
 ehthumbs.db
 Thumbs.db
 tmp/
+db/longboy.db
