@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -160,8 +161,12 @@ func handleActivateActionChain(db *sql.DB, w http.ResponseWriter, id string) {
 
 // Action Handlers
 func handleCreateAction(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	var action models.Action
-	err := json.NewDecoder(r.Body).Decode(&action)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	action, err := models.UnmarshalAction(body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

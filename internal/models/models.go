@@ -16,10 +16,44 @@ type Context struct {
 	Results map[string]interface{}
 }
 
+type Description struct {
+	Description            string `json:"description"`
+	Author                 string `json:"author"`
+	CreationDate           string `json:"creation_date"`
+	LastUpdate             string `json:"last_update"`
+	Version                string `json:"version"`
+	Inputs                 string `json:"inputs"`
+	Outputs                string `json:"outputs"`
+	Dependencies           string `json:"dependencies"`
+	UsageExamples          string `json:"usage_examples"`
+	ErrorHandling          string `json:"error_handling"`
+	RelatedActions         string `json:"related_actions"`
+	SecurityConsiderations string `json:"security_considerations"`
+	Licensing              string `json:"licensing"`
+}
+
+// Print method to display the Description details neatly
+func (d Description) Print() {
+	fmt.Println("Description:", d.Description)
+	fmt.Println("Author:", d.Author)
+	fmt.Println("Creation Date:", d.CreationDate)
+	fmt.Println("Last Update:", d.LastUpdate)
+	fmt.Println("Version:", d.Version)
+	fmt.Println("Inputs:", d.Inputs)
+	fmt.Println("Outputs:", d.Outputs)
+	fmt.Println("Dependencies:", d.Dependencies)
+	fmt.Println("Usage Examples:", d.UsageExamples)
+	fmt.Println("Error Handling:", d.ErrorHandling)
+	fmt.Println("Related Actions:", d.RelatedActions)
+	fmt.Println("Security Considerations:", d.SecurityConsiderations)
+	fmt.Println("Licensing:", d.Licensing)
+}
+
 type ActionChain struct {
-	ID      string   `json:"id"`
-	Trigger *Trigger `json:"trigger"`
-	Context *Context `json:"context"`
+	ID          string       `json:"id"`
+	Trigger     *Trigger     `json:"trigger"`
+	Context     *Context     `json:"context"`
+	Description *Description `json:"description"`
 }
 
 type Trigger struct {
@@ -31,6 +65,7 @@ type Trigger struct {
 	Body              string            `json:"body"`
 	ResultID          string            `json:"result_id,omitempty"`
 	FollowingActionID string            `json:"following_action_id,omitempty"`
+	Description       *Description      `json:"description"`
 }
 
 func (t Trigger) Exec(ctx *Context) error {
@@ -63,15 +98,80 @@ func (t Trigger) Exec(ctx *Context) error {
 type Action interface {
 	GetID() string
 	GetType() string
-	GetDescription() string
+	GetDescription()
 	Exec(ctx *Context) error
 	GetResultID() string
 	GetFollowingActionID() string
 }
 
+func UnmarshalAction(data []byte) (Action, error) {
+	var baseAction struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &baseAction); err != nil {
+		return nil, err
+	}
+
+	var action Action
+	switch baseAction.Type {
+	case "http":
+		var httpAction HTTPAction
+		if err := json.Unmarshal(data, &httpAction); err != nil {
+			return nil, err
+		}
+		action = &httpAction
+	case "llm":
+		var llmAction LLMAction
+		if err := json.Unmarshal(data, &llmAction); err != nil {
+			return nil, err
+		}
+		action = &llmAction
+	case "code":
+		var codeAction CodeAction
+		if err := json.Unmarshal(data, &codeAction); err != nil {
+			return nil, err
+		}
+		action = &codeAction
+	case "branch":
+		var branchAction BranchAction
+		if err := json.Unmarshal(data, &branchAction); err != nil {
+			return nil, err
+		}
+		action = &branchAction
+	case "loop":
+		var loopAction LoopAction
+		if err := json.Unmarshal(data, &loopAction); err != nil {
+			return nil, err
+		}
+		action = &loopAction
+	default:
+		return nil, fmt.Errorf("unknown action type: %s", baseAction.Type)
+	}
+
+	return action, nil
+}
+
+func MarshalAction(action Action) ([]byte, error) {
+	switch action.GetType() {
+	case "http":
+		return json.Marshal(action)
+	case "llm":
+		return json.Marshal(action)
+	case "code":
+		return json.Marshal(action)
+	case "branch":
+		return json.Marshal(action)
+	case "loop":
+		return json.Marshal(action)
+	default:
+		return nil, fmt.Errorf("unknown action type: %s", action.GetType())
+	}
+}
+
 type HTTPAction struct {
 	ID                string            `json:"id"`
-	Description       string            `json:"description"`
+	Type              string            `json:"type"`
+	Description       *Description      `json:"description"`
 	URL               string            `json:"url"`
 	Method            string            `json:"method"`
 	Headers           map[string]string `json:"headers"`
@@ -84,8 +184,8 @@ func (h *HTTPAction) GetID() string {
 	return h.ID
 }
 
-func (h *HTTPAction) GetDescription() string {
-	return h.Description
+func (h *HTTPAction) GetDescription() {
+	h.Description.Print()
 }
 
 func (h *HTTPAction) GetType() string {
@@ -128,7 +228,8 @@ func (h *HTTPAction) GetFollowingActionID() string {
 
 type LLMAction struct {
 	ID                string                 `json:"id"`
-	Description       string                 `json:"description"`
+	Type              string                 `json:"type"`
+	Description       *Description           `json:"description"`
 	Endpoint          string                 `json:"endpoint"`
 	Model             string                 `json:"model"`
 	Prompt            string                 `json:"prompt"`
@@ -141,8 +242,8 @@ func (l *LLMAction) GetID() string {
 	return l.ID
 }
 
-func (l *LLMAction) GetDescription() string {
-	return l.Description
+func (l *LLMAction) GetDescription() {
+	l.Description.Print()
 }
 
 func (l *LLMAction) GetType() string {
@@ -191,20 +292,21 @@ func (l *LLMAction) GetFollowingActionID() string {
 }
 
 type CodeAction struct {
-	ID                string `json:"id"`
-	Description       string `json:"description"`
-	Language          string `json:"language"`
-	SourceCode        string `json:"source_code"`
-	ResultID          string `json:"result_id,omitempty"`
-	FollowingActionID string `json:"following_action_id,omitempty"`
+	ID                string       `json:"id"`
+	Type              string       `json:"type"`
+	Description       *Description `json:"description"`
+	Language          string       `json:"language"`
+	SourceCode        string       `json:"source_code"`
+	ResultID          string       `json:"result_id,omitempty"`
+	FollowingActionID string       `json:"following_action_id,omitempty"`
 }
 
 func (c *CodeAction) GetID() string {
 	return c.ID
 }
 
-func (c *CodeAction) GetDescription() string {
-	return c.Description
+func (c *CodeAction) GetDescription() {
+	c.Description.Print()
 }
 
 func (c *CodeAction) GetType() string {
@@ -242,20 +344,21 @@ func (c *CodeAction) GetFollowingActionID() string {
 }
 
 type BranchAction struct {
-	ID                string `json:"id"`
-	Description       string `json:"description"`
-	Condition         string `json:"condition"`
-	TrueActionID      string `json:"true_action_id"`
-	FalseActionID     string `json:"false_action_id"`
-	FollowingActionID string `json:"following_action_id"`
+	ID                string       `json:"id"`
+	Type              string       `json:"type"`
+	Description       *Description `json:"description"`
+	Condition         string       `json:"condition"`
+	TrueActionID      string       `json:"true_action_id"`
+	FalseActionID     string       `json:"false_action_id"`
+	FollowingActionID string       `json:"following_action_id"`
 }
 
 func (b *BranchAction) GetID() string {
 	return b.ID
 }
 
-func (b *BranchAction) GetDescription() string {
-	return b.Description
+func (b *BranchAction) GetDescription() {
+	b.Description.Print()
 }
 
 func (b *BranchAction) GetType() string {
@@ -288,19 +391,20 @@ func (b *BranchAction) GetFollowingActionID() string {
 }
 
 type LoopAction struct {
-	ID                string `json:"id"`
-	Description       string `json:"description"`
-	Action            Action `json:"action"`
-	Condition         string `json:"condition"`
-	FollowingActionID string `json:"following_action_id"`
+	ID                string       `json:"id"`
+	Type              string       `json:"type"`
+	Description       *Description `json:"description"`
+	Action            Action       `json:"action"`
+	Condition         string       `json:"condition"`
+	FollowingActionID string       `json:"following_action_id"`
 }
 
 func (l *LoopAction) GetID() string {
 	return l.ID
 }
 
-func (l *LoopAction) GetDescription() string {
-	return l.Description
+func (l *LoopAction) GetDescription() {
+	l.Description.Print()
 }
 
 func (l *LoopAction) GetType() string {

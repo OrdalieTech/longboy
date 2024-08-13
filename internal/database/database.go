@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -48,8 +49,7 @@ func getActionByID(db *sql.DB, id string) (models.Action, error) {
 		return nil, err
 	}
 
-	var action models.Action
-	err = json.Unmarshal(data, &action)
+	action, err := models.UnmarshalAction(data)
 	return action, err
 }
 
@@ -125,8 +125,13 @@ func ListActionChains(db *sql.DB) ([]models.ActionChain, error) {
 }
 
 func ActivateActionChain(db *sql.DB, id string) error {
+	log.Printf("Activating action chain with ID: %s", id)
+
 	chain, err := GetActionChain(db, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("action chain with ID %s not found", id)
+		}
 		return fmt.Errorf("failed to retrieve action chain: %v", err)
 	}
 
@@ -135,17 +140,6 @@ func ActivateActionChain(db *sql.DB, id string) error {
 	err = chain.Trigger.Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to execute trigger: %v", err)
-	}
-
-	if chain.Trigger.FollowingActionID != "" {
-		action, err := getActionByID(db, chain.Trigger.FollowingActionID)
-		if err != nil {
-			return fmt.Errorf("failed to execute following action: %v", err)
-		}
-		err = action.Exec(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to execute following action: %v", err)
-		}
 	}
 
 	// Execute following actions
@@ -167,7 +161,7 @@ func ActivateActionChain(db *sql.DB, id string) error {
 
 // CreateAction creates a new action in the database
 func CreateAction(db *sql.DB, action models.Action) error {
-	data, err := json.Marshal(action)
+	data, err := models.MarshalAction(action)
 	if err != nil {
 		return err
 	}
@@ -185,13 +179,13 @@ func GetAction(db *sql.DB, id string) (models.Action, error) {
 	}
 
 	var action models.Action
-	err = json.Unmarshal(data, &action)
+	action, err = models.UnmarshalAction(data)
 	return action, err
 }
 
 // UpdateAction updates an existing action in the database
 func UpdateAction(db *sql.DB, action models.Action) error {
-	data, err := json.Marshal(action)
+	data, err := models.MarshalAction(action)
 	if err != nil {
 		return err
 	}
@@ -217,14 +211,12 @@ func ListActions(db *sql.DB) ([]models.Action, error) {
 	var actions []models.Action
 	for rows.Next() {
 		var data []byte
-		var action models.Action
-
 		err := rows.Scan(&data)
 		if err != nil {
 			return nil, err
 		}
 
-		err = json.Unmarshal(data, &action)
+		action, err := models.UnmarshalAction(data)
 		if err != nil {
 			return nil, err
 		}
