@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	_ "github.com/mattn/go-sqlite3"
+
 	models "longboy/internal/models"
 )
 

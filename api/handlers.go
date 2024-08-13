@@ -36,6 +36,8 @@ func SetupRoutes(db *sql.DB) {
 			handleUpdateActionChain(db, w, r)
 		case http.MethodDelete:
 			handleDeleteActionChain(db, w, id)
+		case http.MethodPost:
+			handleActivateActionChain(db, w, id)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -142,6 +144,18 @@ func handleListActionChains(db *sql.DB, w http.ResponseWriter) {
 	}
 
 	json.NewEncoder(w).Encode(chains)
+}
+
+func handleActivateActionChain(db *sql.DB, w http.ResponseWriter, id string) {
+	err := database.ActivateActionChain(db, id)
+	if err != nil {
+		log.Printf("Error activating action chain: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Action chain activated successfully"))
 }
 
 // Action Handlers

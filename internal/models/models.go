@@ -7,6 +7,9 @@ import (
 	"io"
 	"net/http"
 	"os/exec"
+	"reflect"
+	"strconv"
+	"strings"
 )
 
 type Context struct {
@@ -60,6 +63,7 @@ func (t Trigger) Exec(ctx *Context) error {
 type Action interface {
 	GetID() string
 	GetType() string
+	GetDescription() string
 	Exec(ctx *Context) error
 	GetResultID() string
 	GetFollowingActionID() string
@@ -67,6 +71,7 @@ type Action interface {
 
 type HTTPAction struct {
 	ID                string            `json:"id"`
+	Description       string            `json:"description"`
 	URL               string            `json:"url"`
 	Method            string            `json:"method"`
 	Headers           map[string]string `json:"headers"`
@@ -77,6 +82,10 @@ type HTTPAction struct {
 
 func (h *HTTPAction) GetID() string {
 	return h.ID
+}
+
+func (h *HTTPAction) GetDescription() string {
+	return h.Description
 }
 
 func (h *HTTPAction) GetType() string {
@@ -119,6 +128,7 @@ func (h *HTTPAction) GetFollowingActionID() string {
 
 type LLMAction struct {
 	ID                string                 `json:"id"`
+	Description       string                 `json:"description"`
 	Endpoint          string                 `json:"endpoint"`
 	Model             string                 `json:"model"`
 	Prompt            string                 `json:"prompt"`
@@ -129,6 +139,10 @@ type LLMAction struct {
 
 func (l *LLMAction) GetID() string {
 	return l.ID
+}
+
+func (l *LLMAction) GetDescription() string {
+	return l.Description
 }
 
 func (l *LLMAction) GetType() string {
@@ -178,6 +192,7 @@ func (l *LLMAction) GetFollowingActionID() string {
 
 type CodeAction struct {
 	ID                string `json:"id"`
+	Description       string `json:"description"`
 	Language          string `json:"language"`
 	SourceCode        string `json:"source_code"`
 	ResultID          string `json:"result_id,omitempty"`
@@ -186,6 +201,10 @@ type CodeAction struct {
 
 func (c *CodeAction) GetID() string {
 	return c.ID
+}
+
+func (c *CodeAction) GetDescription() string {
+	return c.Description
 }
 
 func (c *CodeAction) GetType() string {
@@ -220,4 +239,154 @@ func (c *CodeAction) GetResultID() string {
 
 func (c *CodeAction) GetFollowingActionID() string {
 	return c.FollowingActionID
+}
+
+type BranchAction struct {
+	ID                string `json:"id"`
+	Description       string `json:"description"`
+	Condition         string `json:"condition"`
+	TrueActionID      string `json:"true_action_id"`
+	FalseActionID     string `json:"false_action_id"`
+	FollowingActionID string `json:"following_action_id"`
+}
+
+func (b *BranchAction) GetID() string {
+	return b.ID
+}
+
+func (b *BranchAction) GetDescription() string {
+	return b.Description
+}
+
+func (b *BranchAction) GetType() string {
+	return "branch"
+}
+
+func (b *BranchAction) Exec(ctx *Context) error {
+	// Evaluate the condition
+	result, err := evaluateCondition(b.Condition, ctx)
+	if err != nil {
+		return fmt.Errorf("error evaluating condition: %v", err)
+	}
+
+	// Set the FollowingActionID based on the condition result
+	if result {
+		b.FollowingActionID = b.TrueActionID
+	} else {
+		b.FollowingActionID = b.FalseActionID
+	}
+
+	return nil
+}
+
+func (b *BranchAction) GetResultID() string {
+	return ""
+}
+
+func (b *BranchAction) GetFollowingActionID() string {
+	return b.FollowingActionID
+}
+
+func evaluateCondition(condition string, ctx *Context) (bool, error) {
+	// Split the condition into parts
+	parts := strings.Split(condition, " ")
+	if len(parts) != 3 {
+		return false, fmt.Errorf("invalid condition format: %s", condition)
+	}
+
+	leftOperand := parts[0]
+	operator := parts[1]
+	rightOperand := parts[2]
+
+	// Get the left operand value from the context
+	leftValue, ok := ctx.Results[leftOperand]
+	if !ok {
+		return false, fmt.Errorf("left operand '%s' not found in context", leftOperand)
+	}
+
+	// Convert right operand to appropriate type
+	var rightValue interface{}
+	switch leftValue.(type) {
+	case int:
+		rightValue, _ = strconv.Atoi(rightOperand)
+	case float64:
+		rightValue, _ = strconv.ParseFloat(rightOperand, 64)
+	case string:
+		rightValue = rightOperand
+	case bool:
+		rightValue, _ = strconv.ParseBool(rightOperand)
+	default:
+		return false, fmt.Errorf("unsupported type for left operand: %T", leftValue)
+	}
+
+	// Evaluate the condition
+	switch operator {
+	case "==":
+		return reflect.DeepEqual(leftValue, rightValue), nil
+	case "!=":
+		return !reflect.DeepEqual(leftValue, rightValue), nil
+	case ">":
+		return compareValues(leftValue, rightValue, operator)
+	case "<":
+		return compareValues(leftValue, rightValue, operator)
+	case ">=":
+		return compareValues(leftValue, rightValue, operator)
+	case "<=":
+		return compareValues(leftValue, rightValue, operator)
+	default:
+		return false, fmt.Errorf("unsupported operator: %s", operator)
+	}
+}
+
+func compareValues(left, right interface{}, operator string) (bool, error) {
+	switch l := left.(type) {
+	case int:
+		r, ok := right.(int)
+		if !ok {
+			return false, fmt.Errorf("type mismatch: %T and %T", left, right)
+		}
+		switch operator {
+		case ">":
+			return l > r, nil
+		case "<":
+			return l < r, nil
+		case ">=":
+			return l >= r, nil
+		case "<=":
+			return l <= r, nil
+		}
+	case float64:
+		r, ok := right.(float64)
+		if !ok {
+			return false, fmt.Errorf("type mismatch: %T and %T", left, right)
+		}
+		switch operator {
+		case ">":
+			return l > r, nil
+		case "<":
+			return l < r, nil
+		case ">=":
+			return l >= r, nil
+		case "<=":
+			return l <= r, nil
+		}
+	case string:
+		r, ok := right.(string)
+		if !ok {
+			return false, fmt.Errorf("type mismatch: %T and %T", left, right)
+		}
+		switch operator {
+		case ">":
+			return l > r, nil
+		case "<":
+			return l < r, nil
+		case ">=":
+			return l >= r, nil
+		case "<=":
+			return l <= r, nil
+		}
+	default:
+		return false, fmt.Errorf("unsupported type for comparison: %T", left)
+	}
+	return false, fmt.Errorf("invalid operator for type: %s", operator)
 }
