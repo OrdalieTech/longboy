@@ -16,6 +16,9 @@ func main() {
 	}
 	defer db.Close()
 
+	// Start monitoring active triggers
+	go database.MonitorActiveTriggers(db)
+
 	// Set up API routes
 	api.SetupRoutes(db)
 

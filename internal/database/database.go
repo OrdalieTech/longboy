@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -21,7 +22,8 @@ func InitDB(dbPath string) (*sql.DB, error) {
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS action_chains (
 			id TEXT PRIMARY KEY,
-			data JSON NOT NULL
+			data JSON NOT NULL,
+			active BOOLEAN NOT NULL DEFAULT 0
 		)
 	`)
 	if err != nil {
@@ -127,6 +129,12 @@ func ListActionChains(db *sql.DB) ([]models.ActionChain, error) {
 func ActivateActionChain(db *sql.DB, id string) error {
 	log.Printf("Activating action chain with ID: %s", id)
 
+	// Set the action chain as active
+	_, err := db.Exec("UPDATE action_chains SET active = 1 WHERE id = ?", id)
+	if err != nil {
+		return fmt.Errorf("failed to activate action chain: %v", err)
+	}
+
 	chain, err := GetActionChain(db, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -157,6 +165,12 @@ func ActivateActionChain(db *sql.DB, id string) error {
 	}
 
 	return nil
+}
+
+// DeactivateActionChain sets the action chain as inactive
+func DeactivateActionChain(db *sql.DB, id string) error {
+	_, err := db.Exec("UPDATE action_chains SET active = 0 WHERE id = ?", id)
+	return err
 }
 
 // CreateAction creates a new action in the database
@@ -225,4 +239,36 @@ func ListActions(db *sql.DB) ([]models.Action, error) {
 	}
 
 	return actions, nil
+}
+
+// MonitorActiveTriggers continuously checks for active triggers and executes them
+func MonitorActiveTriggers(db *sql.DB) {
+	ticker := time.NewTicker(1 * time.Minute) // Adjust the interval as needed
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			// Retrieve all active action chains
+			rows, err := db.Query("SELECT id FROM action_chains WHERE active = 1")
+			if err != nil {
+				log.Printf("Error retrieving active action chains: %v", err)
+				continue
+			}
+			defer rows.Close()
+
+			for rows.Next() {
+				var id string
+				if err := rows.Scan(&id); err != nil {
+					log.Printf("Error scanning action chain ID: %v", err)
+					continue
+				}
+
+				// Execute the action chain
+				if err := ActivateActionChain(db, id); err != nil {
+					log.Printf("Error executing action chain %s: %v", id, err)
+				}
+			}
+		}
+	}
 }
