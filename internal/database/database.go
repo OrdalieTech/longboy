@@ -36,6 +36,17 @@ func InitDB(dbPath string) (*sql.DB, error) {
 		return nil, err
 	}
 
+	// Create triggers table with a single data JSON column
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS triggers (
+			id TEXT PRIMARY KEY,
+			data JSON NOT NULL
+		)
+	`)
+	if err != nil {
+		return nil, err
+	}
+
 	return db, nil
 }
 
@@ -161,4 +172,134 @@ func ActivateActionChain(db *sql.DB, id string) error {
 	}
 
 	return nil
+}
+
+// CreateAction creates a new action in the database
+func CreateAction(db *sql.DB, action models.Action) error {
+	data, err := json.Marshal(action)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("INSERT INTO actions (id, data) VALUES (?, ?)", action.GetID(), data)
+	return err
+}
+
+// GetAction retrieves an action from the database by ID
+func GetAction(db *sql.DB, id string) (models.Action, error) {
+	var data []byte
+	err := db.QueryRow("SELECT data FROM actions WHERE id = ?", id).Scan(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	var action models.Action
+	err = json.Unmarshal(data, &action)
+	return action, err
+}
+
+// UpdateAction updates an existing action in the database
+func UpdateAction(db *sql.DB, action models.Action) error {
+	data, err := json.Marshal(action)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec("UPDATE actions SET data = ? WHERE id = ?", data, action.GetID())
+	return err
+}
+
+// DeleteAction removes an action from the database by ID
+func DeleteAction(db *sql.DB, id string) error {
+	_, err := db.Exec("DELETE FROM actions WHERE id = ?", id)
+	return err
+}
+
+// ListActions retrieves all actions from the database
+func ListActions(db *sql.DB) ([]models.Action, error) {
+	rows, err := db.Query("SELECT data FROM actions")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var actions []models.Action
+	for rows.Next() {
+		var data []byte
+		var action models.Action
+
+		err := rows.Scan(&data)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(data, &action)
+		if err != nil {
+			return nil, err
+		}
+
+		actions = append(actions, action)
+	}
+
+	return actions, nil
+}
+
+// CreateTrigger creates a new trigger in the database
+func CreateTrigger(db *sql.DB, trigger models.Trigger) error {
+	_, err := db.Exec(`
+		INSERT INTO triggers (id, type, url, method, headers, body, result_id, following_action_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`, trigger.ID, trigger.Type, trigger.URL, trigger.Method, trigger.Headers, trigger.Body, trigger.ResultID, trigger.FollowingActionID)
+	return err
+}
+
+// GetTrigger retrieves a trigger from the database by ID
+func GetTrigger(db *sql.DB, id string) (models.Trigger, error) {
+	var trigger models.Trigger
+	err := db.QueryRow(`
+		SELECT id, type, url, method, headers, body, result_id, following_action_id
+		FROM triggers
+		WHERE id = ?
+	`, id).Scan(&trigger.ID, &trigger.Type, &trigger.URL, &trigger.Method, &trigger.Headers, &trigger.Body, &trigger.ResultID, &trigger.FollowingActionID)
+	if err != nil {
+		return trigger, err
+	}
+	return trigger, nil
+}
+
+// UpdateTrigger updates an existing trigger in the database
+func UpdateTrigger(db *sql.DB, trigger models.Trigger) error {
+	_, err := db.Exec(`
+		UPDATE triggers
+		SET type = ?, url = ?, method = ?, headers = ?, body = ?, result_id = ?, following_action_id = ?
+		WHERE id = ?
+	`, trigger.Type, trigger.URL, trigger.Method, trigger.Headers, trigger.Body, trigger.ResultID, trigger.FollowingActionID, trigger.ID)
+	return err
+}
+
+// DeleteTrigger removes a trigger from the database by ID
+func DeleteTrigger(db *sql.DB, id string) error {
+	_, err := db.Exec("DELETE FROM triggers WHERE id = ?", id)
+	return err
+}
+
+// ListTriggers retrieves all triggers from the database
+func ListTriggers(db *sql.DB) ([]models.Trigger, error) {
+	rows, err := db.Query("SELECT id, type, url, method, headers, body, result_id, following_action_id FROM triggers")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var triggers []models.Trigger
+	for rows.Next() {
+		var trigger models.Trigger
+		err := rows.Scan(&trigger.ID, &trigger.Type, &trigger.URL, &trigger.Method, &trigger.Headers, &trigger.Body, &trigger.ResultID, &trigger.FollowingActionID)
+		if err != nil {
+			return nil, err
+		}
+		triggers = append(triggers, trigger)
+	}
+
+	return triggers, nil
 }
