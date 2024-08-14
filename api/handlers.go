@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"longboy/internal/database"
 	"longboy/internal/models"
@@ -247,4 +248,33 @@ func handleListActions(db *sql.DB, w http.ResponseWriter) {
 	}
 
 	json.NewEncoder(w).Encode(actions)
+}
+
+// MonitorActiveTriggers continuously checks for active triggers and executes them
+func MonitorActiveTriggers(db *sql.DB) {
+	ticker := time.NewTicker(1 * time.Minute) // Adjust the interval as needed
+	defer ticker.Stop()
+
+	for range ticker.C { // Corrected loop
+		// Retrieve all active action chains
+		rows, err := db.Query("SELECT id FROM action_chains WHERE active = 1")
+		if err != nil {
+			log.Printf("Error retrieving active action chains: %v", err)
+			continue
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var id string
+			if err := rows.Scan(&id); err != nil {
+				log.Printf("Error scanning action chain ID: %v", err)
+				continue
+			}
+
+			// Execute the action chain
+			if err := database.ActivateActionChain(db, id); err != nil {
+				log.Printf("Error executing action chain %s: %v", id, err)
+			}
+		}
+	}
 }
