@@ -69,7 +69,7 @@ func SetupRoutes(db *sql.DB) {
 		case http.MethodGet:
 			handleGetAction(db, w, id)
 		case http.MethodPut:
-			handleUpdateAction(db, w, r)
+			handleUpdateAction(db, w, r, id)
 		case http.MethodDelete:
 			handleDeleteAction(db, w, id)
 		default:
@@ -210,15 +210,19 @@ func handleGetAction(db *sql.DB, w http.ResponseWriter, id string) {
 	json.NewEncoder(w).Encode(action)
 }
 
-func handleUpdateAction(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	var action models.Action
-	err := json.NewDecoder(r.Body).Decode(&action)
+func handleUpdateAction(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	action, err := models.UnmarshalAction(body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = database.UpdateAction(db, action)
+	err = database.UpdateAction(db, action, id)
 	if err != nil {
 		log.Printf("Error updating action: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

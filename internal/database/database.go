@@ -214,13 +214,13 @@ func GetAction(db *sql.DB, id string) (models.Action, error) {
 }
 
 // UpdateAction updates an existing action in the database
-func UpdateAction(db *sql.DB, action models.Action) error {
+func UpdateAction(db *sql.DB, action models.Action, id string) error {
 	data, err := models.MarshalAction(action)
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Exec("UPDATE actions SET data = ? WHERE id = ?", data, action.GetID())
+	_, err = db.Exec("UPDATE actions SET data = ? WHERE id = ?", data, id)
 	return err
 }
 
