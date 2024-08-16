@@ -88,6 +88,9 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 		log.Fatalf("Failed to read file: %v", err)
 	}
 
+	// Check for BOM and remove it if present
+	data = bytes.TrimPrefix(data, []byte("\xef\xbb\xbf"))
+
 	// Parse the JSON data
 	var apiSpec map[string]interface{}
 	if err := json.Unmarshal(data, &apiSpec); err != nil {
@@ -126,7 +129,9 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 			description, _ := operationMap["description"].(string)
 
 			// Extract headers
-			headers := []string{}
+			headers := map[string]string{
+				"Content-Type": "application/json",
+			}
 			if parameters, ok := operationMap["parameters"].([]interface{}); ok {
 				for _, param := range parameters {
 					paramMap, ok := param.(map[string]interface{})
@@ -135,7 +140,7 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 					}
 					if paramMap["in"] == "header" {
 						if name, ok := paramMap["name"].(string); ok {
-							headers = append(headers, name)
+							headers[name] = ""
 						}
 					}
 				}
@@ -151,7 +156,7 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 						}
 						if schemeMap["type"] == "apiKey" && schemeMap["in"] == "header" {
 							if name, ok := schemeMap["name"].(string); ok {
-								headers = append(headers, name)
+								headers[name] = ""
 							}
 						}
 					}
@@ -168,10 +173,13 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 							continue
 						}
 						if schema, ok := mediaTypeMap["schema"].(map[string]interface{}); ok {
-							requestBodyBytes, err := json.Marshal(schema)
-							if err == nil {
-								requestBody = string(requestBodyBytes)
+							resolvedSchema := resolveRef(schema, apiSpec)
+							requestBodyMap := extractProperties(resolvedSchema)
+							requestBodyBytes, err := json.MarshalIndent(requestBodyMap, "", "  ")
+							if err != nil {
+								log.Fatalf("Failed to marshal request body: %v", err)
 							}
+							requestBody = string(requestBodyBytes)
 						}
 					}
 				}
@@ -204,4 +212,45 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 		}
 	}
 	return list, nil
+}
+
+// resolveRef resolves a $ref field in the schema and replaces it with the actual definition
+func resolveRef(schema map[string]interface{}, apiSpec map[string]interface{}) map[string]interface{} {
+	if ref, ok := schema["$ref"].(string); ok {
+		// Remove the initial '#/' from the reference
+		ref = strings.TrimPrefix(ref, "#/")
+		// Split the reference by '/'
+		parts := strings.Split(ref, "/")
+		// Traverse the apiSpec to find the referenced schema
+		var result interface{} = apiSpec
+		for _, part := range parts {
+			if m, ok := result.(map[string]interface{}); ok {
+				result = m[part]
+			} else {
+				return map[string]interface{}{} // Return empty object if the reference is invalid
+			}
+		}
+		// Recursively resolve any nested $ref fields
+		if resolvedSchema, ok := result.(map[string]interface{}); ok {
+			return resolveRef(resolvedSchema, apiSpec)
+		}
+	}
+	// Recursively resolve any nested $ref fields in the original schema
+	for key, value := range schema {
+		if subSchema, ok := value.(map[string]interface{}); ok {
+			schema[key] = resolveRef(subSchema, apiSpec)
+		}
+	}
+	return schema
+}
+
+// extractProperties extracts the properties from the schema and creates a map with empty values
+func extractProperties(schema map[string]interface{}) map[string]interface{} {
+	properties := make(map[string]interface{})
+	if props, ok := schema["properties"].(map[string]interface{}); ok {
+		for key := range props {
+			properties[key] = ""
+		}
+	}
+	return properties
 }
