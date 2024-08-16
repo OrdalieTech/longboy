@@ -5,12 +5,9 @@ import (
 )
 
 type LoopAction struct {
-	ID                string `json:"id"`
-	Type              string `json:"type"`
-	Description       string `json:"description"`
-	Action            Action `json:"action"`
-	Condition         string `json:"condition"`
-	FollowingActionID string `json:"following_action_id"`
+	BaseAction
+	Action    Action `json:"action"`
+	Condition string `json:"condition"`
 }
 
 func (l *LoopAction) GetID() string {

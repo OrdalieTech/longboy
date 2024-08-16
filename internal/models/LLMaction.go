@@ -8,15 +8,11 @@ import (
 )
 
 type LLMAction struct {
-	ID                string                 `json:"id"`
-	Type              string                 `json:"type"`
-	Description       string                 `json:"description"`
-	Endpoint          string                 `json:"endpoint"`
-	Model             string                 `json:"model"`
-	Prompt            string                 `json:"prompt"`
-	Parameters        map[string]interface{} `json:"parameters"`
-	ResultID          string                 `json:"result_id,omitempty"`
-	FollowingActionID string                 `json:"following_action_id,omitempty"`
+	BaseAction
+	Endpoint   string                 `json:"endpoint"`
+	Model      string                 `json:"model"`
+	Prompt     string                 `json:"prompt"`
+	Parameters map[string]interface{} `json:"parameters"`
 }
 
 func (l *LLMAction) GetID() string {

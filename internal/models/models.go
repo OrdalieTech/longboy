@@ -94,6 +94,14 @@ func (t Trigger) Exec(ctx *Context) error {
 	return nil
 }
 
+type BaseAction struct {
+	ID                string `json:"id"`
+	Type              string `json:"type"`
+	Description       string `json:"description"`
+	ResultID          string `json:"result_id,omitempty"`
+	FollowingActionID string `json:"following_action_id,omitempty"`
+}
+
 type Action interface {
 	GetID() string
 	SetID(id string)

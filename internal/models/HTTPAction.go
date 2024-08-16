@@ -14,15 +14,11 @@ import (
 )
 
 type HTTPAction struct {
-	ID                string            `json:"id"`
-	Type              string            `json:"type"`
-	Description       string            `json:"description"`
-	URL               string            `json:"url"`
-	Method            string            `json:"method"`
-	Headers           map[string]string `json:"headers"`
-	Body              string            `json:"body"`
-	ResultID          string            `json:"result_id,omitempty"`
-	FollowingActionID string            `json:"following_action_id,omitempty"`
+	BaseAction
+	URL     string            `json:"url"`
+	Method  string            `json:"method"`
+	Headers map[string]string `json:"headers"`
+	Body    string            `json:"body"`
 }
 
 func (h *HTTPAction) GetID() string {
@@ -193,15 +189,17 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 			//ID and ResultID fields should be filled with a random non used ID,
 			//description could be filled by the user, this could be handled in the UI
 			list = append(list, HTTPAction{
-				ID:                id,
-				Type:              "http",
-				Description:       description,
-				URL:               fullURL,
-				Method:            strings.ToUpper(method),
-				Headers:           headersMap,
-				Body:              requestBody,
-				ResultID:          id,
-				FollowingActionID: "",
+				BaseAction: BaseAction{
+					ID:                id,
+					Type:              "http",
+					Description:       description,
+					ResultID:          id,
+					FollowingActionID: "",
+				},
+				URL:     fullURL,
+				Method:  strings.ToUpper(method),
+				Headers: headersMap,
+				Body:    requestBody,
 			})
 		}
 	}

@@ -3,13 +3,10 @@ package models
 import "fmt"
 
 type BranchAction struct {
-	ID                string `json:"id"`
-	Type              string `json:"type"`
-	Description       string `json:"description"`
-	Condition         string `json:"condition"`
-	TrueActionID      string `json:"true_action_id"`
-	FalseActionID     string `json:"false_action_id"`
-	FollowingActionID string `json:"following_action_id"`
+	BaseAction
+	Condition     string `json:"condition"`
+	TrueActionID  string `json:"true_action_id"`
+	FalseActionID string `json:"false_action_id"`
 }
 
 func (b *BranchAction) GetID() string {

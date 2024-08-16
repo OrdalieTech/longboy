@@ -6,13 +6,9 @@ import (
 )
 
 type CodeAction struct {
-	ID                string `json:"id"`
-	Type              string `json:"type"`
-	Description       string `json:"description"`
-	Language          string `json:"language"`
-	SourceCode        string `json:"source_code"`
-	ResultID          string `json:"result_id,omitempty"`
-	FollowingActionID string `json:"following_action_id,omitempty"`
+	BaseAction
+	Language   string `json:"language"`
+	SourceCode string `json:"source_code"`
 }
 
 func (c *CodeAction) GetID() string {
@@ -32,6 +28,11 @@ func (c *CodeAction) GetType() string {
 	return "code"
 }
 
+/*
+POC —
+Need refactoring to avoid using exec.Commands inside the Longboy container
+-> Maybe using a pakcage like Goja (github.com/dop251/goja)
+*/
 func (c *CodeAction) Exec(ctx *Context) error {
 	var cmd *exec.Cmd
 	switch c.Language {
