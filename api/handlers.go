@@ -7,8 +7,11 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
+	"longboy/internal/config"
 	"longboy/internal/database"
 	"longboy/internal/models"
 )
@@ -75,6 +78,15 @@ func SetupRoutes(db *sql.DB) {
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
+	})
+
+	// New route for adding secrets to .env file
+	http.HandleFunc("/secrets", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		handleAddSecret(w, r)
 	})
 }
 
@@ -281,4 +293,65 @@ func MonitorActiveTriggers(db *sql.DB) {
 			}
 		}
 	}
+}
+
+// New handler for adding secrets to .env file
+func handleAddSecret(w http.ResponseWriter, r *http.Request) {
+	var secret struct {
+		Key   string `json:"key"`
+		Value string `json:"value"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&secret)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if secret.Key == "" || secret.Value == "" {
+		http.Error(w, "Both key and value are required", http.StatusBadRequest)
+		return
+	}
+
+	err = addSecretToEnvFile(secret.Key, secret.Value)
+	if err != nil {
+		log.Printf("Error adding secret to .env file: %v", err)
+		http.Error(w, "Failed to add secret", http.StatusInternalServerError)
+		return
+	}
+
+	config.SetSecret(secret.Key, secret.Value)
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("Secret added successfully"))
+}
+
+func addSecretToEnvFile(key, value string) error {
+	envFile := ".env"
+
+	// Read existing contents
+	content, err := os.ReadFile(envFile)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+
+	lines := strings.Split(string(content), "\n")
+	found := false
+
+	// Check for existing key and update if found
+	for i, line := range lines {
+		if strings.HasPrefix(line, key+"=") {
+			lines[i] = fmt.Sprintf("%s=%s", key, value)
+			found = true
+			break
+		}
+	}
+
+	// If key not found, append new line
+	if !found {
+		lines = append(lines, fmt.Sprintf("%s=%s", key, value))
+	}
+
+	// Write updated content back to file
+	return os.WriteFile(envFile, []byte(strings.Join(lines, "\n")), 0600)
 }

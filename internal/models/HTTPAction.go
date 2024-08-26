@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"longboy/internal/config"
+	"longboy/internal/utils"
 	"net/http"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
-
-	"longboy/internal/utils"
 )
 
 type HTTPAction struct {
@@ -40,13 +42,82 @@ func (h *HTTPAction) GetType() string {
 
 func (h *HTTPAction) Exec(ctx *Context) error {
 	client := &http.Client{}
-	req, err := http.NewRequest(h.Method, h.URL, bytes.NewBufferString(h.Body))
+
+	// Replace placeholders in the body with actual secret values and context values
+	body := h.Body
+	secretRe := regexp.MustCompile(`{{(.+?)}}`)
+	contextRe := regexp.MustCompile(`\[\[(.+?)\]\]`)
+
+	body = secretRe.ReplaceAllStringFunc(body, func(match string) string {
+		key := strings.Trim(match, "{}")
+		return config.GetConfig().GetSecret(key)
+	})
+
+	body = contextRe.ReplaceAllStringFunc(body, func(match string) string {
+		expr := strings.Trim(match, "[]")
+		parts := strings.Split(expr, ".")
+		var value interface{}
+		var ok bool
+
+		// Get the initial value
+		value, ok = ctx.Results[parts[0]]
+		if !ok {
+			return match // Return original if not found in context
+		}
+
+		// Navigate through the parts
+		for i, part := range parts[1:] {
+			switch v := value.(type) {
+			case map[string]interface{}:
+				value, ok = v[part]
+				if !ok {
+					return match
+				}
+			case []interface{}:
+				// Check if the part is a number for array indexing
+				index, err := strconv.Atoi(part)
+				if err != nil || index < 0 || index >= len(v) {
+					return match
+				}
+				value = v[index]
+			default:
+				// If we can't navigate further but there are more parts, return original
+				if i < len(parts)-2 {
+					return match
+				}
+			}
+		}
+
+		// Convert the final value to string
+		switch v := value.(type) {
+		case string:
+			return v
+		case []byte:
+			return string(v)
+		default:
+			jsonBytes, err := json.Marshal(v)
+			if err != nil {
+				log.Printf("Error marshaling context value for expression %s: %v", expr, err)
+				return match
+			}
+			return string(jsonBytes)
+		}
+	})
+
+	req, err := http.NewRequest(h.Method, h.URL, bytes.NewBufferString(body))
 	if err != nil {
 		return err
 	}
+
+	// Replace placeholders in headers with actual secret values
 	for key, value := range h.Headers {
-		req.Header.Set(key, value)
+		headerValue := secretRe.ReplaceAllStringFunc(value, func(match string) string {
+			secretKey := strings.Trim(match, "{}")
+			return config.GetConfig().GetSecret(secretKey)
+		})
+		req.Header.Set(key, headerValue)
 	}
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
@@ -180,6 +251,8 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 								log.Fatalf("Failed to marshal request body: %v", err)
 							}
 							requestBody = string(requestBodyBytes)
+							//requestBody = strings.ReplaceAll(string(requestBodyBytes), `"`, `"{{`)
+							//requestBody = strings.ReplaceAll(requestBody, `"`, `}}"`)
 						}
 					}
 				}

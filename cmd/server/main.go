@@ -5,12 +5,15 @@ import (
 	"net/http"
 
 	"longboy/api"
+	"longboy/internal/config"
 	"longboy/internal/database"
 )
 
 func main() {
+	cfg := config.GetConfig()
+
 	// Initialize database
-	db, err := database.InitDB("./db/longboy.db")
+	db, err := database.InitDB(cfg.GetSecret("DB_PATH"))
 	if err != nil {
 		log.Fatal(err)
 	}

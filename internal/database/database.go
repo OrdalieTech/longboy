@@ -156,26 +156,38 @@ func ActivateActionChain(db *sql.DB, id string) error {
 		return fmt.Errorf("failed to retrieve action chain: %v", err)
 	}
 
-	ctx := &models.Context{Results: make(map[string]interface{})}
+	// Start the action chain in a new goroutine
+	go func() {
+		ctx := &models.Context{Results: make(map[string]interface{})}
 
-	err = chain.Trigger.Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to execute trigger: %v", err)
-	}
+		// Keep the trigger always active
+		for {
+			err := chain.Trigger.Exec(ctx)
+			if err != nil {
+				log.Printf("failed to execute trigger: %v", err)
+				// Optionally, handle the error, e.g., retry, backoff, etc.
+			}
 
-	// Execute following actions
-	nextActionID := chain.Trigger.FollowingActionID
-	for nextActionID != "" {
-		nextAction, err := getActionByID(db, nextActionID) // Assume this function retrieves the next action by ID
-		if err != nil {
-			return err
+			// Execute following actions
+			nextActionID := chain.Trigger.FollowingActionID
+			for nextActionID != "" {
+				nextAction, err := getActionByID(db, nextActionID) // Assume this function retrieves the next action by ID
+				if err != nil {
+					log.Printf("failed to get next action: %v", err)
+					break
+				}
+				err = nextAction.Exec(ctx)
+				if err != nil {
+					log.Printf("failed to execute next action: %v", err)
+					break
+				}
+				nextActionID = nextAction.GetFollowingActionID()
+			}
+
+			// Optionally add a sleep or wait mechanism to avoid tight looping
+			time.Sleep(time.Second * 5) // Adjust the sleep duration as needed
 		}
-		err = nextAction.Exec(ctx)
-		if err != nil {
-			return err
-		}
-		nextActionID = nextAction.GetFollowingActionID()
-	}
+	}()
 
 	return nil
 }

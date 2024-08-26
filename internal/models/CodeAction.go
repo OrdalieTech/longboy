@@ -3,6 +3,9 @@ package models
 import (
 	"fmt"
 	"os/exec"
+	"strings"
+
+	"github.com/dop251/goja"
 )
 
 type CodeAction struct {
@@ -34,22 +37,54 @@ Need refactoring to avoid using exec.Commands inside the Longboy container
 -> Maybe using a pakcage like Goja (github.com/dop251/goja)
 */
 func (c *CodeAction) Exec(ctx *Context) error {
-	var cmd *exec.Cmd
+	var output strings.Builder
+	var err error
+
 	switch c.Language {
 	case "python":
-		cmd = exec.Command("python", "-c", c.SourceCode)
+		cmd := exec.Command("python", "-c", c.SourceCode)
+		var byteOutput []byte
+		byteOutput, err = cmd.CombinedOutput()
+		output.Write(byteOutput)
 	case "bash":
-		cmd = exec.Command("bash", "-c", c.SourceCode)
+		cmd := exec.Command("bash", "-c", c.SourceCode)
+		var byteOutput []byte
+		byteOutput, err = cmd.CombinedOutput()
+		output.Write(byteOutput)
+	case "javascript":
+		vm := goja.New()
+
+		// Provide a custom console.log implementation
+		console := vm.NewObject()
+		err = console.Set("log", func(call goja.FunctionCall) goja.Value {
+			for _, arg := range call.Arguments {
+				fmt.Fprintf(&output, "%v ", arg)
+			}
+			fmt.Fprintln(&output)
+			return goja.Undefined()
+		})
+		if err != nil {
+			return fmt.Errorf("failed to set console.log: %v", err)
+		}
+		err = vm.Set("console", console)
+		if err != nil {
+			return fmt.Errorf("failed to set console object: %v", err)
+		}
+
+		_, err = vm.RunString(c.SourceCode)
+		if err != nil {
+			return fmt.Errorf("JavaScript execution failed: %v", err)
+		}
 	default:
 		return fmt.Errorf("unsupported language: %s", c.Language)
 	}
-	output, err := cmd.CombinedOutput()
+
 	if err != nil {
-		return fmt.Errorf("execution failed: %s, output: %s", err, output)
+		return fmt.Errorf("execution failed: %s, output: %s", err, output.String())
 	}
 
 	if c.ResultID != "" {
-		ctx.Results[c.ResultID] = string(output)
+		ctx.Results[c.ResultID] = output.String()
 	}
 
 	return nil
