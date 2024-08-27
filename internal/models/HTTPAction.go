@@ -10,6 +10,7 @@ import (
 	"longboy/internal/utils"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -197,7 +198,11 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 			}
 
 			// Extract description
-			description, _ := operationMap["description"].(string)
+			description, ok := operationMap["description"].(string)
+			if !ok {
+				log.Printf("Warning: No description found for %s %s", method, path)
+				description = ""
+			}
 
 			// Extract headers
 			headers := map[string]string{
@@ -253,6 +258,8 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 							requestBody = string(requestBodyBytes)
 							//requestBody = strings.ReplaceAll(string(requestBodyBytes), `"`, `"{{`)
 							//requestBody = strings.ReplaceAll(requestBody, `"`, `}}"`)
+							// Replace escaped newline characters with actual newlines
+							requestBody = strings.ReplaceAll(requestBody, "\\n", "\n")
 						}
 					}
 				}
@@ -267,8 +274,6 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 
 			id := fmt.Sprintf("%d", utils.GetNextActionID())
 
-			//ID and ResultID fields should be filled with a random non used ID,
-			//description could be filled by the user, this could be handled in the UI
 			list = append(list, HTTPAction{
 				BaseAction: BaseAction{
 					ID:                id,
@@ -326,4 +331,52 @@ func extractProperties(schema map[string]interface{}) map[string]interface{} {
 		}
 	}
 	return properties
+}
+
+func LoadAPITemplates(apiDirectory string) (map[string][]HTTPAction, error) {
+	templates := make(map[string][]HTTPAction)
+
+	files, err := os.ReadDir(apiDirectory)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read API directory: %v", err)
+	}
+
+	for _, file := range files {
+		if !file.IsDir() && strings.HasSuffix(file.Name(), ".json") {
+			filePath := filepath.Join(apiDirectory, file.Name())
+			actions, err := OpenAPIToHTTPActions(filePath)
+			if err != nil {
+				log.Printf("Error processing %s: %v", file.Name(), err)
+				continue
+			}
+
+			templateName := strings.TrimSuffix(file.Name(), ".json")
+			templates[templateName] = actions
+		}
+	}
+
+	return templates, nil
+}
+
+func SaveAPITemplates(templates map[string][]HTTPAction, templateDir string) error {
+	if err := os.MkdirAll(templateDir, 0755); err != nil {
+		return fmt.Errorf("failed to create template directory: %v", err)
+	}
+
+	for name, actions := range templates {
+		filePath := filepath.Join(templateDir, name+".json")
+		file, err := os.Create(filePath)
+		if err != nil {
+			return fmt.Errorf("failed to create file %s: %v", filePath, err)
+		}
+		defer file.Close()
+
+		encoder := json.NewEncoder(file)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(actions); err != nil {
+			return fmt.Errorf("failed to encode template %s: %v", name, err)
+		}
+	}
+
+	return nil
 }

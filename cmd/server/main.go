@@ -7,10 +7,23 @@ import (
 	"longboy/api"
 	"longboy/internal/config"
 	"longboy/internal/database"
+	"longboy/internal/models"
 )
 
 func main() {
 	cfg := config.GetConfig()
+
+	apiDirectory := "./openapi/paypal"
+	templateDirectory := "./templates/paypal"
+	templates, err := models.LoadAPITemplates(apiDirectory)
+	if err != nil {
+		log.Fatalf("Failed to load API templates: %v", err)
+	}
+
+	err = models.SaveAPITemplates(templates, templateDirectory)
+	if err != nil {
+		log.Fatalf("Failed to save API templates: %v", err)
+	}
 
 	// Initialize database
 	db, err := database.InitDB(cfg.GetSecret("DB_PATH"))

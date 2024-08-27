@@ -1,0 +1,1130 @@
+[
+  {
+    "id": "1",
+    "type": "http",
+    "description": "",
+    "result_id": "1",
+    "url": "https://api.openai.com/v1/images/generations",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"model\": \"\",\n  \"n\": \"\",\n  \"prompt\": \"\",\n  \"quality\": \"\",\n  \"response_format\": \"\",\n  \"size\": \"\",\n  \"style\": \"\",\n  \"user\": \"\"\n}"
+  },
+  {
+    "id": "2",
+    "type": "http",
+    "description": "",
+    "result_id": "2",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/users",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"role\": \"\",\n  \"user_id\": \"\"\n}"
+  },
+  {
+    "id": "3",
+    "type": "http",
+    "description": "",
+    "result_id": "3",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/users",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "4",
+    "type": "http",
+    "description": "",
+    "result_id": "4",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/service_accounts",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "5",
+    "type": "http",
+    "description": "",
+    "result_id": "5",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/service_accounts",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"name\": \"\"\n}"
+  },
+  {
+    "id": "6",
+    "type": "http",
+    "description": "",
+    "result_id": "6",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/users/{user_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "7",
+    "type": "http",
+    "description": "",
+    "result_id": "7",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/users/{user_id}",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"role\": \"\"\n}"
+  },
+  {
+    "id": "8",
+    "type": "http",
+    "description": "",
+    "result_id": "8",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/users/{user_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "9",
+    "type": "http",
+    "description": "",
+    "result_id": "9",
+    "url": "https://api.openai.com/v1/uploads/{upload_id}/complete",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"md5\": \"\",\n  \"part_ids\": \"\"\n}"
+  },
+  {
+    "id": "10",
+    "type": "http",
+    "description": "",
+    "result_id": "10",
+    "url": "https://api.openai.com/v1/models",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "11",
+    "type": "http",
+    "description": "",
+    "result_id": "11",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/messages",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "12",
+    "type": "http",
+    "description": "",
+    "result_id": "12",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/messages",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"attachments\": \"\",\n  \"content\": \"\",\n  \"metadata\": \"\",\n  \"role\": \"\"\n}"
+  },
+  {
+    "id": "13",
+    "type": "http",
+    "description": "",
+    "result_id": "13",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/messages/{message_id}",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"metadata\": \"\"\n}"
+  },
+  {
+    "id": "14",
+    "type": "http",
+    "description": "",
+    "result_id": "14",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/messages/{message_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "15",
+    "type": "http",
+    "description": "",
+    "result_id": "15",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/messages/{message_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "16",
+    "type": "http",
+    "description": "",
+    "result_id": "16",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "17",
+    "type": "http",
+    "description": "",
+    "result_id": "17",
+    "url": "https://api.openai.com/v1/batches",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"completion_window\": \"\",\n  \"endpoint\": \"\",\n  \"input_file_id\": \"\",\n  \"metadata\": \"\"\n}"
+  },
+  {
+    "id": "18",
+    "type": "http",
+    "description": "",
+    "result_id": "18",
+    "url": "https://api.openai.com/v1/batches",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "19",
+    "type": "http",
+    "description": "",
+    "result_id": "19",
+    "url": "https://api.openai.com/v1/organization/users/{user_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "20",
+    "type": "http",
+    "description": "",
+    "result_id": "20",
+    "url": "https://api.openai.com/v1/organization/users/{user_id}",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"role\": \"\"\n}"
+  },
+  {
+    "id": "21",
+    "type": "http",
+    "description": "",
+    "result_id": "21",
+    "url": "https://api.openai.com/v1/organization/users/{user_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "22",
+    "type": "http",
+    "description": "",
+    "result_id": "22",
+    "url": "https://api.openai.com/v1/completions",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"best_of\": \"\",\n  \"echo\": \"\",\n  \"frequency_penalty\": \"\",\n  \"logit_bias\": \"\",\n  \"logprobs\": \"\",\n  \"max_tokens\": \"\",\n  \"model\": \"\",\n  \"n\": \"\",\n  \"presence_penalty\": \"\",\n  \"prompt\": \"\",\n  \"seed\": \"\",\n  \"stop\": \"\",\n  \"stream\": \"\",\n  \"stream_options\": \"\",\n  \"suffix\": \"\",\n  \"temperature\": \"\",\n  \"top_p\": \"\",\n  \"user\": \"\"\n}"
+  },
+  {
+    "id": "23",
+    "type": "http",
+    "description": "",
+    "result_id": "23",
+    "url": "https://api.openai.com/v1/images/edits",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"image\": \"\",\n  \"mask\": \"\",\n  \"model\": \"\",\n  \"n\": \"\",\n  \"prompt\": \"\",\n  \"response_format\": \"\",\n  \"size\": \"\",\n  \"user\": \"\"\n}"
+  },
+  {
+    "id": "24",
+    "type": "http",
+    "description": "",
+    "result_id": "24",
+    "url": "https://api.openai.com/v1/files/{file_id}/content",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "25",
+    "type": "http",
+    "description": "",
+    "result_id": "25",
+    "url": "https://api.openai.com/v1/uploads",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"bytes\": \"\",\n  \"filename\": \"\",\n  \"mime_type\": \"\",\n  \"purpose\": \"\"\n}"
+  },
+  {
+    "id": "26",
+    "type": "http",
+    "description": "",
+    "result_id": "26",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/runs",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "27",
+    "type": "http",
+    "description": "",
+    "result_id": "27",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/runs",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"additional_instructions\": \"\",\n  \"additional_messages\": \"\",\n  \"assistant_id\": \"\",\n  \"instructions\": \"\",\n  \"max_completion_tokens\": \"\",\n  \"max_prompt_tokens\": \"\",\n  \"metadata\": \"\",\n  \"model\": \"\",\n  \"parallel_tool_calls\": \"\",\n  \"response_format\": \"\",\n  \"stream\": \"\",\n  \"temperature\": \"\",\n  \"tool_choice\": \"\",\n  \"tools\": \"\",\n  \"top_p\": \"\",\n  \"truncation_strategy\": \"\"\n}"
+  },
+  {
+    "id": "28",
+    "type": "http",
+    "description": "",
+    "result_id": "28",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/runs/{run_id}/steps",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "29",
+    "type": "http",
+    "description": "",
+    "result_id": "29",
+    "url": "https://api.openai.com/v1/images/variations",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"image\": \"\",\n  \"model\": \"\",\n  \"n\": \"\",\n  \"response_format\": \"\",\n  \"size\": \"\",\n  \"user\": \"\"\n}"
+  },
+  {
+    "id": "30",
+    "type": "http",
+    "description": "",
+    "result_id": "30",
+    "url": "https://api.openai.com/v1/uploads/{upload_id}/cancel",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "31",
+    "type": "http",
+    "description": "",
+    "result_id": "31",
+    "url": "https://api.openai.com/v1/threads",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"messages\": \"\",\n  \"metadata\": \"\",\n  \"tool_resources\": \"\"\n}"
+  },
+  {
+    "id": "32",
+    "type": "http",
+    "description": "",
+    "result_id": "32",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/runs/{run_id}/steps/{step_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "33",
+    "type": "http",
+    "description": "",
+    "result_id": "33",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "34",
+    "type": "http",
+    "description": "",
+    "result_id": "34",
+    "url": "https://api.openai.com/v1/batches/{batch_id}/cancel",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "35",
+    "type": "http",
+    "description": "",
+    "result_id": "35",
+    "url": "https://api.openai.com/v1/audio/speech",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"input\": \"\",\n  \"model\": \"\",\n  \"response_format\": \"\",\n  \"speed\": \"\",\n  \"voice\": \"\"\n}"
+  },
+  {
+    "id": "36",
+    "type": "http",
+    "description": "",
+    "result_id": "36",
+    "url": "https://api.openai.com/v1/organization/users",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "37",
+    "type": "http",
+    "description": "",
+    "result_id": "37",
+    "url": "https://api.openai.com/v1/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "38",
+    "type": "http",
+    "description": "",
+    "result_id": "38",
+    "url": "https://api.openai.com/v1/assistants/{assistant_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "39",
+    "type": "http",
+    "description": "",
+    "result_id": "39",
+    "url": "https://api.openai.com/v1/assistants/{assistant_id}",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"description\": \"\",\n  \"instructions\": \"\",\n  \"metadata\": \"\",\n  \"model\": \"\",\n  \"name\": \"\",\n  \"response_format\": \"\",\n  \"temperature\": \"\",\n  \"tool_resources\": \"\",\n  \"tools\": \"\",\n  \"top_p\": \"\"\n}"
+  },
+  {
+    "id": "40",
+    "type": "http",
+    "description": "",
+    "result_id": "40",
+    "url": "https://api.openai.com/v1/assistants/{assistant_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "41",
+    "type": "http",
+    "description": "",
+    "result_id": "41",
+    "url": "https://api.openai.com/v1/threads/runs",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"assistant_id\": \"\",\n  \"instructions\": \"\",\n  \"max_completion_tokens\": \"\",\n  \"max_prompt_tokens\": \"\",\n  \"metadata\": \"\",\n  \"model\": \"\",\n  \"parallel_tool_calls\": \"\",\n  \"response_format\": \"\",\n  \"stream\": \"\",\n  \"temperature\": \"\",\n  \"thread\": \"\",\n  \"tool_choice\": \"\",\n  \"tool_resources\": \"\",\n  \"tools\": \"\",\n  \"top_p\": \"\",\n  \"truncation_strategy\": \"\"\n}"
+  },
+  {
+    "id": "42",
+    "type": "http",
+    "description": "",
+    "result_id": "42",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/runs/{run_id}/cancel",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "43",
+    "type": "http",
+    "description": "",
+    "result_id": "43",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "44",
+    "type": "http",
+    "description": "",
+    "result_id": "44",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"expires_after\": \"\",\n  \"metadata\": \"\",\n  \"name\": \"\"\n}"
+  },
+  {
+    "id": "45",
+    "type": "http",
+    "description": "",
+    "result_id": "45",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "46",
+    "type": "http",
+    "description": "",
+    "result_id": "46",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/archive",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "47",
+    "type": "http",
+    "description": "",
+    "result_id": "47",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/api_keys/{key_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "48",
+    "type": "http",
+    "description": "",
+    "result_id": "48",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/api_keys/{key_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "49",
+    "type": "http",
+    "description": "",
+    "result_id": "49",
+    "url": "https://api.openai.com/v1/batches/{batch_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "50",
+    "type": "http",
+    "description": "",
+    "result_id": "50",
+    "url": "https://api.openai.com/v1/audio/transcriptions",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"file\": \"\",\n  \"language\": \"\",\n  \"model\": \"\",\n  \"prompt\": \"\",\n  \"response_format\": \"\",\n  \"temperature\": \"\",\n  \"timestamp_granularities[]\": \"\"\n}"
+  },
+  {
+    "id": "51",
+    "type": "http",
+    "description": "",
+    "result_id": "51",
+    "url": "https://api.openai.com/v1/fine_tuning/jobs/{fine_tuning_job_id}/cancel",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "52",
+    "type": "http",
+    "description": "",
+    "result_id": "52",
+    "url": "https://api.openai.com/v1/moderations",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"input\": \"\",\n  \"model\": \"\"\n}"
+  },
+  {
+    "id": "53",
+    "type": "http",
+    "description": "",
+    "result_id": "53",
+    "url": "https://api.openai.com/v1/vector_stores",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "54",
+    "type": "http",
+    "description": "",
+    "result_id": "54",
+    "url": "https://api.openai.com/v1/vector_stores",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"chunking_strategy\": \"\",\n  \"expires_after\": \"\",\n  \"file_ids\": \"\",\n  \"metadata\": \"\",\n  \"name\": \"\"\n}"
+  },
+  {
+    "id": "55",
+    "type": "http",
+    "description": "",
+    "result_id": "55",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}/file_batches",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"chunking_strategy\": \"\",\n  \"file_ids\": \"\"\n}"
+  },
+  {
+    "id": "56",
+    "type": "http",
+    "description": "",
+    "result_id": "56",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}/file_batches/{batch_id}/files",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "57",
+    "type": "http",
+    "description": "",
+    "result_id": "57",
+    "url": "https://api.openai.com/v1/chat/completions",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"frequency_penalty\": \"\",\n  \"function_call\": \"\",\n  \"functions\": \"\",\n  \"logit_bias\": \"\",\n  \"logprobs\": \"\",\n  \"max_tokens\": \"\",\n  \"messages\": \"\",\n  \"model\": \"\",\n  \"n\": \"\",\n  \"parallel_tool_calls\": \"\",\n  \"presence_penalty\": \"\",\n  \"response_format\": \"\",\n  \"seed\": \"\",\n  \"service_tier\": \"\",\n  \"stop\": \"\",\n  \"stream\": \"\",\n  \"stream_options\": \"\",\n  \"temperature\": \"\",\n  \"tool_choice\": \"\",\n  \"tools\": \"\",\n  \"top_logprobs\": \"\",\n  \"top_p\": \"\",\n  \"user\": \"\"\n}"
+  },
+  {
+    "id": "58",
+    "type": "http",
+    "description": "",
+    "result_id": "58",
+    "url": "https://api.openai.com/v1/fine_tuning/jobs",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"hyperparameters\": \"\",\n  \"integrations\": \"\",\n  \"model\": \"\",\n  \"seed\": \"\",\n  \"suffix\": \"\",\n  \"training_file\": \"\",\n  \"validation_file\": \"\"\n}"
+  },
+  {
+    "id": "59",
+    "type": "http",
+    "description": "",
+    "result_id": "59",
+    "url": "https://api.openai.com/v1/fine_tuning/jobs",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "60",
+    "type": "http",
+    "description": "",
+    "result_id": "60",
+    "url": "https://api.openai.com/v1/models/{model}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "61",
+    "type": "http",
+    "description": "",
+    "result_id": "61",
+    "url": "https://api.openai.com/v1/models/{model}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "62",
+    "type": "http",
+    "description": "",
+    "result_id": "62",
+    "url": "https://api.openai.com/v1/assistants",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"description\": \"\",\n  \"instructions\": \"\",\n  \"metadata\": \"\",\n  \"model\": \"\",\n  \"name\": \"\",\n  \"response_format\": \"\",\n  \"temperature\": \"\",\n  \"tool_resources\": \"\",\n  \"tools\": \"\",\n  \"top_p\": \"\"\n}"
+  },
+  {
+    "id": "63",
+    "type": "http",
+    "description": "",
+    "result_id": "63",
+    "url": "https://api.openai.com/v1/assistants",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "64",
+    "type": "http",
+    "description": "",
+    "result_id": "64",
+    "url": "https://api.openai.com/v1/threads/{thread_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "65",
+    "type": "http",
+    "description": "",
+    "result_id": "65",
+    "url": "https://api.openai.com/v1/threads/{thread_id}",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"metadata\": \"\",\n  \"tool_resources\": \"\"\n}"
+  },
+  {
+    "id": "66",
+    "type": "http",
+    "description": "",
+    "result_id": "66",
+    "url": "https://api.openai.com/v1/threads/{thread_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "67",
+    "type": "http",
+    "description": "",
+    "result_id": "67",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}/files",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "68",
+    "type": "http",
+    "description": "",
+    "result_id": "68",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}/files",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"chunking_strategy\": \"\",\n  \"file_id\": \"\"\n}"
+  },
+  {
+    "id": "69",
+    "type": "http",
+    "description": "",
+    "result_id": "69",
+    "url": "https://api.openai.com/v1/files",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "70",
+    "type": "http",
+    "description": "",
+    "result_id": "70",
+    "url": "https://api.openai.com/v1/files",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"file\": \"\",\n  \"purpose\": \"\"\n}"
+  },
+  {
+    "id": "71",
+    "type": "http",
+    "description": "",
+    "result_id": "71",
+    "url": "https://api.openai.com/v1/organization/invites/{invite_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "72",
+    "type": "http",
+    "description": "",
+    "result_id": "72",
+    "url": "https://api.openai.com/v1/organization/invites/{invite_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "73",
+    "type": "http",
+    "description": "",
+    "result_id": "73",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/api_keys",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "74",
+    "type": "http",
+    "description": "",
+    "result_id": "74",
+    "url": "https://api.openai.com/v1/uploads/{upload_id}/parts",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"data\": \"\"\n}"
+  },
+  {
+    "id": "75",
+    "type": "http",
+    "description": "",
+    "result_id": "75",
+    "url": "https://api.openai.com/v1/fine_tuning/jobs/{fine_tuning_job_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "76",
+    "type": "http",
+    "description": "",
+    "result_id": "76",
+    "url": "https://api.openai.com/v1/fine_tuning/jobs/{fine_tuning_job_id}/events",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "77",
+    "type": "http",
+    "description": "",
+    "result_id": "77",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/runs/{run_id}",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"metadata\": \"\"\n}"
+  },
+  {
+    "id": "78",
+    "type": "http",
+    "description": "",
+    "result_id": "78",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/runs/{run_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "79",
+    "type": "http",
+    "description": "",
+    "result_id": "79",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/service_accounts/{service_account_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "80",
+    "type": "http",
+    "description": "",
+    "result_id": "80",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}/service_accounts/{service_account_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "81",
+    "type": "http",
+    "description": "",
+    "result_id": "81",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}/files/{file_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "82",
+    "type": "http",
+    "description": "",
+    "result_id": "82",
+    "url": "https://api.openai.com/v1/vector_stores/{vector_store_id}/files/{file_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "83",
+    "type": "http",
+    "description": "",
+    "result_id": "83",
+    "url": "https://api.openai.com/v1/organization/audit_logs",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "84",
+    "type": "http",
+    "description": "",
+    "result_id": "84",
+    "url": "https://api.openai.com/v1/audio/translations",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"file\": \"\",\n  \"model\": \"\",\n  \"prompt\": \"\",\n  \"response_format\": \"\",\n  \"temperature\": \"\"\n}"
+  },
+  {
+    "id": "85",
+    "type": "http",
+    "description": "",
+    "result_id": "85",
+    "url": "https://api.openai.com/v1/threads/{thread_id}/runs/{run_id}/submit_tool_outputs",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"stream\": \"\",\n  \"tool_outputs\": \"\"\n}"
+  },
+  {
+    "id": "86",
+    "type": "http",
+    "description": "",
+    "result_id": "86",
+    "url": "https://api.openai.com/v1/organization/invites",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "87",
+    "type": "http",
+    "description": "",
+    "result_id": "87",
+    "url": "https://api.openai.com/v1/organization/invites",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"email\": \"\",\n  \"role\": \"\"\n}"
+  },
+  {
+    "id": "88",
+    "type": "http",
+    "description": "",
+    "result_id": "88",
+    "url": "https://api.openai.com/v1/organization/projects",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "89",
+    "type": "http",
+    "description": "",
+    "result_id": "89",
+    "url": "https://api.openai.com/v1/organization/projects",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"name\": \"\"\n}"
+  },
+  {
+    "id": "90",
+    "type": "http",
+    "description": "",
+    "result_id": "90",
+    "url": "https://api.openai.com/v1/embeddings",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"dimensions\": \"\",\n  \"encoding_format\": \"\",\n  \"input\": \"\",\n  \"model\": \"\",\n  \"user\": \"\"\n}"
+  },
+  {
+    "id": "91",
+    "type": "http",
+    "description": "",
+    "result_id": "91",
+    "url": "https://api.openai.com/v1/files/{file_id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "92",
+    "type": "http",
+    "description": "",
+    "result_id": "92",
+    "url": "https://api.openai.com/v1/files/{file_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "93",
+    "type": "http",
+    "description": "",
+    "result_id": "93",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "94",
+    "type": "http",
+    "description": "",
+    "result_id": "94",
+    "url": "https://api.openai.com/v1/organization/projects/{project_id}",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"name\": \"\"\n}"
+  }
+]

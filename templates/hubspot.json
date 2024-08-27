@@ -1,0 +1,158 @@
+[
+  {
+    "id": "1",
+    "type": "http",
+    "description": "Read an Object identified by `{contactId}`. `{contactId}` refers to the internal object ID.  Control what is returned via the `properties` query param.",
+    "result_id": "1",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/{contactId}",
+    "method": "GET",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "2",
+    "type": "http",
+    "description": "Move an Object identified by `{contactId}` to the recycling bin.",
+    "result_id": "2",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/{contactId}",
+    "method": "DELETE",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "3",
+    "type": "http",
+    "description": "Perform a partial update of an Object identified by `{contactId}`. `{contactId}` refers to the internal object ID. Provided property values will be overwritten. Read-only and non-existent properties will be ignored. Properties values can be cleared by passing an empty string.",
+    "result_id": "3",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/{contactId}",
+    "method": "PATCH",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"properties\": \"\"\n}"
+  },
+  {
+    "id": "4",
+    "type": "http",
+    "description": "",
+    "result_id": "4",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/merge",
+    "method": "POST",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"objectIdToMerge\": \"\",\n  \"primaryObjectId\": \"\"\n}"
+  },
+  {
+    "id": "5",
+    "type": "http",
+    "description": "Create a contact with the given properties and return a copy of the object, including the ID. Documentation and examples for creating standard contacts is provided.",
+    "result_id": "5",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts",
+    "method": "POST",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"associations\": \"\",\n  \"properties\": \"\"\n}"
+  },
+  {
+    "id": "6",
+    "type": "http",
+    "description": "Read a page of contacts. Control what is returned via the `properties` query param.",
+    "result_id": "6",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts",
+    "method": "GET",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "7",
+    "type": "http",
+    "description": "",
+    "result_id": "7",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/search",
+    "method": "POST",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"after\": \"\",\n  \"filterGroups\": \"\",\n  \"limit\": \"\",\n  \"properties\": \"\",\n  \"query\": \"\",\n  \"sorts\": \"\"\n}"
+  },
+  {
+    "id": "8",
+    "type": "http",
+    "description": "",
+    "result_id": "8",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/read",
+    "method": "POST",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"idProperty\": \"\",\n  \"inputs\": \"\",\n  \"properties\": \"\",\n  \"propertiesWithHistory\": \"\"\n}"
+  },
+  {
+    "id": "9",
+    "type": "http",
+    "description": "",
+    "result_id": "9",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/archive",
+    "method": "POST",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"inputs\": \"\"\n}"
+  },
+  {
+    "id": "10",
+    "type": "http",
+    "description": "",
+    "result_id": "10",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/create",
+    "method": "POST",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"inputs\": \"\"\n}"
+  },
+  {
+    "id": "11",
+    "type": "http",
+    "description": "",
+    "result_id": "11",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/update",
+    "method": "POST",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"inputs\": \"\"\n}"
+  },
+  {
+    "id": "12",
+    "type": "http",
+    "description": "Permanently delete a contact and all associated content to follow GDPR. Use optional property 'idProperty' set to 'email' to identify contact by email address. If email address is not found, the email address will be added to a blocklist and prevent it from being used in the future.",
+    "result_id": "12",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/gdpr-delete",
+    "method": "POST",
+    "headers": {
+      "": "",
+      "application/json": ""
+    },
+    "body": "{\n  \"idProperty\": \"\",\n  \"objectId\": \"\"\n}"
+  }
+]

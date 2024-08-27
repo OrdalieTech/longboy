@@ -1,0 +1,74 @@
+[
+  {
+    "id": "106",
+    "type": "http",
+    "description": "Creates a Setup Token from the given payment source and adds it to the Vault of the associated customer.",
+    "result_id": "106",
+    "url": "https://api-m.sandbox.paypal.com/v3/vault/setup-tokens",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"customer\": \"\",\n  \"metadata\": \"\",\n  \"payment_source\": \"\"\n}"
+  },
+  {
+    "id": "107",
+    "type": "http",
+    "description": "Returns a readable representation of temporarily vaulted payment source associated with the setup token id.",
+    "result_id": "107",
+    "url": "https://api-m.sandbox.paypal.com/v3/vault/setup-tokens/{id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "108",
+    "type": "http",
+    "description": "Creates a Payment Token from the given payment source and adds it to the Vault of the associated customer.",
+    "result_id": "108",
+    "url": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens",
+    "method": "POST",
+    "headers": {
+      "application/json": ""
+    },
+    "body": "{\n  \"customer\": \"\",\n  \"metadata\": \"\",\n  \"payment_source\": \"\"\n}"
+  },
+  {
+    "id": "109",
+    "type": "http",
+    "description": "Returns all payment tokens for a customer.",
+    "result_id": "109",
+    "url": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "110",
+    "type": "http",
+    "description": "Returns a readable representation of vaulted payment source associated with the payment token id.",
+    "result_id": "110",
+    "url": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/{id}",
+    "method": "GET",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  },
+  {
+    "id": "111",
+    "type": "http",
+    "description": "Delete the payment token associated with the payment token id.",
+    "result_id": "111",
+    "url": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/{id}",
+    "method": "DELETE",
+    "headers": {
+      "application/json": ""
+    },
+    "body": ""
+  }
+]
