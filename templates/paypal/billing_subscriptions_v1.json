@@ -2,170 +2,184 @@
   {
     "id": "1",
     "type": "http",
-    "description": "Shows details for a subscription, by ID.",
+    "description": "Shows details for a plan, by ID.",
     "result_id": "1",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "2",
     "type": "http",
-    "description": "Updates a subscription which could be in \u003ccode\u003eACTIVE\u003c/code\u003e or \u003ccode\u003eSUSPENDED\u003c/code\u003e status. You can override plan level default attributes by providing customised values for plan path in the patch request.\u003cbr /\u003e \u003cul\u003e \u003cli\u003eYou cannot update attributes that have already completed (Example - trial cycles can’t be updated if completed).\u003c/li\u003e \u003cli\u003eOnce overridden, changes to plan resource will not impact subscription.\u003c/li\u003e \u003cli\u003eAny price update will not impact billing cycles within next 10 days (Applicable only for subscriptions funded by PayPal account).\u003c/li\u003e \u003c/ul\u003e Following are the fields eligible for patch.\u003ctable\u003e\u003cthead\u003e\u003ctr\u003e\u003cth\u003eAttribute or object\u003c/th\u003e\u003cth\u003eOperations\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ebilling_info.outstanding_balance\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ecustom_id\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.billing_cycles[@sequence==n].\u003cbr/\u003epricing_scheme.fixed_price\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.billing_cycles[@sequence==n].\u003cbr/\u003epricing_scheme.tiers\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.billing_cycles[@sequence==n].\u003cbr/\u003etotal_cycles\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.payment_preferences.\u003cbr/\u003eauto_bill_outstanding\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.payment_preferences.\u003cbr/\u003epayment_failure_threshold\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.taxes.inclusive\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.taxes.percentage\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eshipping_amount\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003estart_time\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003esubscriber.shipping_address\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003esubscriber.payment_source (for subscriptions funded\u003cbr/\u003eby card payments)\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
+    "description": "Updates a plan with the `CREATED` or `ACTIVE` status. For an `INACTIVE` plan, you can make only status updates.\u003cbr/\u003eYou can patch these attributes and objects:\u003ctable\u003e\u003cthead\u003e\u003ctr\u003e\u003cth\u003eAttribute or object\u003c/th\u003e\u003cth\u003eOperations\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003edescription\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayment_preferences.auto_bill_outstanding\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003etaxes.percentage\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayment_preferences.payment_failure_threshold\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayment_preferences.setup_fee\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayment_preferences.setup_fee_failure_action\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ename\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
     "result_id": "2",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}",
     "method": "PATCH",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "3",
     "type": "http",
-    "description": "Cancels the subscription.",
+    "description": "Activates a plan, by ID.",
     "result_id": "3",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/cancel",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}/activate",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"reason\": \"\"\n}"
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "4",
     "type": "http",
-    "description": "Activates the subscription.",
+    "description": "Updates pricing for a plan. For example, you can update a regular billing cycle from $5 per month to $7 per month.",
     "result_id": "4",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/activate",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}/update-pricing-schemes",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"reason\": \"\"\n}"
+    "body": "{\n  \"pricing_schemes\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "5",
     "type": "http",
-    "description": "Captures an authorized payment from the subscriber on the subscription.",
+    "description": "Cancels the subscription.",
     "result_id": "5",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/capture",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/cancel",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"amount\": \"\",\n  \"capture_type\": \"\",\n  \"note\": \"\"\n}"
+    "body": "{\n  \"reason\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "6",
     "type": "http",
-    "description": "Lists billing plans.",
+    "description": "Captures an authorized payment from the subscriber on the subscription.",
     "result_id": "6",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans",
-    "method": "GET",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/capture",
+    "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "{\n  \"amount\": \"\",\n  \"capture_type\": \"\",\n  \"note\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "7",
     "type": "http",
-    "description": "Creates a plan that defines pricing and billing cycle details for subscriptions.",
+    "description": "Activates the subscription.",
     "result_id": "7",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/activate",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"billing_cycles\": \"\",\n  \"description\": \"\",\n  \"name\": \"\",\n  \"payment_preferences\": \"\",\n  \"product_id\": \"\",\n  \"quantity_supported\": \"\",\n  \"status\": \"\",\n  \"taxes\": \"\"\n}"
+    "body": "{\n  \"reason\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "8",
     "type": "http",
-    "description": "Activates a plan, by ID.",
+    "description": "Lists transactions for a subscription.",
     "result_id": "8",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}/activate",
-    "method": "POST",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/transactions",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "9",
     "type": "http",
-    "description": "Deactivates a plan, by ID.",
+    "description": "Creates a plan that defines pricing and billing cycle details for subscriptions.",
     "result_id": "9",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}/deactivate",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "{\n  \"billing_cycles\": \"\",\n  \"description\": \"\",\n  \"name\": \"\",\n  \"payment_preferences\": \"\",\n  \"product_id\": \"\",\n  \"quantity_supported\": \"\",\n  \"status\": \"\",\n  \"taxes\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "10",
     "type": "http",
-    "description": "Updates pricing for a plan. For example, you can update a regular billing cycle from $5 per month to $7 per month.",
+    "description": "Lists billing plans.",
     "result_id": "10",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}/update-pricing-schemes",
-    "method": "POST",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"pricing_schemes\": \"\"\n}"
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "11",
     "type": "http",
-    "description": "Lists transactions for a subscription.",
+    "description": "Deactivates a plan, by ID.",
     "result_id": "11",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/transactions",
-    "method": "GET",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}/deactivate",
+    "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "12",
     "type": "http",
-    "description": "Updates a plan with the `CREATED` or `ACTIVE` status. For an `INACTIVE` plan, you can make only status updates.\u003cbr/\u003eYou can patch these attributes and objects:\u003ctable\u003e\u003cthead\u003e\u003ctr\u003e\u003cth\u003eAttribute or object\u003c/th\u003e\u003cth\u003eOperations\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003edescription\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayment_preferences.auto_bill_outstanding\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003etaxes.percentage\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayment_preferences.payment_failure_threshold\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayment_preferences.setup_fee\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayment_preferences.setup_fee_failure_action\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ename\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
+    "description": "Creates a subscription.",
     "result_id": "12",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}",
-    "method": "PATCH",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions",
+    "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "{\n  \"application_context\": \"\",\n  \"auto_renewal\": \"\",\n  \"custom_id\": \"\",\n  \"plan\": \"\",\n  \"plan_id\": \"\",\n  \"quantity\": \"\",\n  \"shipping_amount\": \"\",\n  \"start_time\": \"\",\n  \"subscriber\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "13",
     "type": "http",
-    "description": "Shows details for a plan, by ID.",
+    "description": "Shows details for a subscription, by ID.",
     "result_id": "13",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/plans/{id}",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "14",
     "type": "http",
-    "description": "Creates a subscription.",
+    "description": "Updates a subscription which could be in \u003ccode\u003eACTIVE\u003c/code\u003e or \u003ccode\u003eSUSPENDED\u003c/code\u003e status. You can override plan level default attributes by providing customised values for plan path in the patch request.\u003cbr /\u003e \u003cul\u003e \u003cli\u003eYou cannot update attributes that have already completed (Example - trial cycles can’t be updated if completed).\u003c/li\u003e \u003cli\u003eOnce overridden, changes to plan resource will not impact subscription.\u003c/li\u003e \u003cli\u003eAny price update will not impact billing cycles within next 10 days (Applicable only for subscriptions funded by PayPal account).\u003c/li\u003e \u003c/ul\u003e Following are the fields eligible for patch.\u003ctable\u003e\u003cthead\u003e\u003ctr\u003e\u003cth\u003eAttribute or object\u003c/th\u003e\u003cth\u003eOperations\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ebilling_info.outstanding_balance\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ecustom_id\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.billing_cycles[@sequence==n].\u003cbr/\u003epricing_scheme.fixed_price\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.billing_cycles[@sequence==n].\u003cbr/\u003epricing_scheme.tiers\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.billing_cycles[@sequence==n].\u003cbr/\u003etotal_cycles\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.payment_preferences.\u003cbr/\u003eauto_bill_outstanding\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.payment_preferences.\u003cbr/\u003epayment_failure_threshold\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.taxes.inclusive\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eplan.taxes.percentage\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eshipping_amount\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003estart_time\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003esubscriber.shipping_address\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd,replace\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003esubscriber.payment_source (for subscriptions funded\u003cbr/\u003eby card payments)\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
     "result_id": "14",
-    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions",
-    "method": "POST",
+    "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}",
+    "method": "PATCH",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"application_context\": \"\",\n  \"auto_renewal\": \"\",\n  \"custom_id\": \"\",\n  \"plan\": \"\",\n  \"plan_id\": \"\",\n  \"quantity\": \"\",\n  \"shipping_amount\": \"\",\n  \"start_time\": \"\",\n  \"subscriber\": \"\"\n}"
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "15",
@@ -175,9 +189,10 @@
     "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/revise",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"application_context\": \"\",\n  \"plan\": \"\",\n  \"plan_id\": \"\",\n  \"quantity\": \"\",\n  \"shipping_address\": \"\",\n  \"shipping_amount\": \"\"\n}"
+    "body": "{\n  \"application_context\": \"\",\n  \"plan\": \"\",\n  \"plan_id\": \"\",\n  \"quantity\": \"\",\n  \"shipping_address\": \"\",\n  \"shipping_amount\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "16",
@@ -187,8 +202,9 @@
     "url": "https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{id}/suspend",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"reason\": \"\"\n}"
+    "body": "{\n  \"reason\": \"\"\n}",
+    "placeholders": null
   }
 ]

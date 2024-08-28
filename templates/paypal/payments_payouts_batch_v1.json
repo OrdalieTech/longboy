@@ -7,9 +7,10 @@
     "url": "https://api-m.sandbox.paypal.com/v1/payments/payouts",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"items\": \"\",\n  \"sender_batch_header\": \"\"\n}"
+    "body": "{\n  \"items\": \"\",\n  \"sender_batch_header\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "96",
@@ -19,9 +20,10 @@
     "url": "https://api-m.sandbox.paypal.com/v1/payments/payouts/{id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "97",
@@ -31,9 +33,10 @@
     "url": "https://api-m.sandbox.paypal.com/v1/payments/payouts-item/{payout_item_id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "98",
@@ -43,8 +46,9 @@
     "url": "https://api-m.sandbox.paypal.com/v1/payments/payouts-item/{payout_item_id}/cancel",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   }
 ]

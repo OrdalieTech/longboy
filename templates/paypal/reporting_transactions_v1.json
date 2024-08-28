@@ -2,25 +2,27 @@
   {
     "id": "99",
     "type": "http",
-    "description": "Lists transactions. Specify one or more query parameters to filter the transaction that appear in the response.\u003cblockquote\u003e\u003cstrong\u003eNotes:\u003c/strong\u003e \u003cul\u003e\u003cli\u003eIf you specify one or more optional query parameters, the \u003ccode\u003eending_balance\u003c/code\u003e response field is empty.\u003c/li\u003e\u003cli\u003eIt takes a maximum of three hours for executed transactions to appear in the list transactions call.\u003c/li\u003e\u003cli\u003eThis call lists transaction for the previous three years.\u003c/li\u003e\u003c/ul\u003e\u003c/blockquote\u003e",
+    "description": "List all balances. Specify date time to list balances for that time that appear in the response.\u003cblockquote\u003e\u003cstrong\u003eNotes:\u003c/strong\u003e \u003cul\u003e\u003cli\u003eIt takes a maximum of three hours for balances to appear in the list balances call.\u003c/li\u003e\u003cli\u003eThis call lists balances upto the previous three years.\u003c/li\u003e\u003c/ul\u003e\u003c/blockquote\u003e",
     "result_id": "99",
-    "url": "https://api-m.paypal.com/v1/reporting/v1/reporting/transactions",
+    "url": "https://api-m.paypal.com/v1/reporting/v1/reporting/balances",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "100",
     "type": "http",
-    "description": "List all balances. Specify date time to list balances for that time that appear in the response.\u003cblockquote\u003e\u003cstrong\u003eNotes:\u003c/strong\u003e \u003cul\u003e\u003cli\u003eIt takes a maximum of three hours for balances to appear in the list balances call.\u003c/li\u003e\u003cli\u003eThis call lists balances upto the previous three years.\u003c/li\u003e\u003c/ul\u003e\u003c/blockquote\u003e",
+    "description": "Lists transactions. Specify one or more query parameters to filter the transaction that appear in the response.\u003cblockquote\u003e\u003cstrong\u003eNotes:\u003c/strong\u003e \u003cul\u003e\u003cli\u003eIf you specify one or more optional query parameters, the \u003ccode\u003eending_balance\u003c/code\u003e response field is empty.\u003c/li\u003e\u003cli\u003eIt takes a maximum of three hours for executed transactions to appear in the list transactions call.\u003c/li\u003e\u003cli\u003eThis call lists transaction for the previous three years.\u003c/li\u003e\u003c/ul\u003e\u003c/blockquote\u003e",
     "result_id": "100",
-    "url": "https://api-m.paypal.com/v1/reporting/v1/reporting/balances",
+    "url": "https://api-m.paypal.com/v1/reporting/v1/reporting/transactions",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   }
 ]

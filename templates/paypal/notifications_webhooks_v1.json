@@ -2,98 +2,106 @@
   {
     "id": "66",
     "type": "http",
-    "description": "Lists available events to which any webhook can subscribe. For a list of supported events, see [Webhook event names](/docs/api/notifications/webhooks/event-names/).",
+    "description": "Resends a webhook event notification, by ID. Any pending notifications are not resent.",
     "result_id": "66",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-event-types",
-    "method": "GET",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events/{event_id}/resend",
+    "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "{\n  \"webhook_ids\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "67",
     "type": "http",
-    "description": "Lists webhooks event notifications. Use query parameters to filter the response.",
+    "description": "Subscribes your webhook listener to events.",
     "result_id": "67",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events",
-    "method": "GET",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks",
+    "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "{\n  \"event_types\": \"\",\n  \"id\": \"\",\n  \"links\": \"\",\n  \"url\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "68",
     "type": "http",
-    "description": "Shows details for a webhooks event notification, by ID.",
+    "description": "Lists webhooks for an app.",
     "result_id": "68",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events/{event_id}",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "69",
     "type": "http",
-    "description": "Subscribes your webhook listener to events.",
+    "description": "Updates a webhook to replace webhook fields with new values. Supports only the `replace` operation. Pass a `json_patch` object with `replace` operation and `path`, which is `/url` for a URL or `/event_types` for events. The `value` is either the URL or a list of events.",
     "result_id": "69",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks",
-    "method": "POST",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/{webhook_id}",
+    "method": "PATCH",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"event_types\": \"\",\n  \"id\": \"\",\n  \"links\": \"\",\n  \"url\": \"\"\n}"
+    "body": "{}",
+    "placeholders": null
   },
   {
     "id": "70",
     "type": "http",
-    "description": "Lists webhooks for an app.",
+    "description": "Deletes a webhook, by ID.",
     "result_id": "70",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks",
-    "method": "GET",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/{webhook_id}",
+    "method": "DELETE",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "71",
     "type": "http",
-    "description": "Lists event subscriptions for a webhook, by ID.",
+    "description": "Shows details for a webhook, by ID.",
     "result_id": "71",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/{webhook_id}/event-types",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/{webhook_id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "72",
     "type": "http",
-    "description": "Creates a webhook lookup.",
+    "description": "Lists webhook lookups.",
     "result_id": "72",
     "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-lookup",
-    "method": "POST",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "73",
     "type": "http",
-    "description": "Lists webhook lookups.",
+    "description": "Creates a webhook lookup.",
     "result_id": "73",
     "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-lookup",
-    "method": "GET",
+    "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "74",
@@ -103,9 +111,10 @@
     "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-lookup/{webhook_lookup_id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "75",
@@ -115,9 +124,10 @@
     "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-lookup/{webhook_lookup_id}",
     "method": "DELETE",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "76",
@@ -127,57 +137,62 @@
     "url": "https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"auth_algo\": \"\",\n  \"cert_url\": \"\",\n  \"transmission_id\": \"\",\n  \"transmission_sig\": \"\",\n  \"transmission_time\": \"\",\n  \"webhook_event\": \"\",\n  \"webhook_id\": \"\"\n}"
+    "body": "{\n  \"auth_algo\": \"\",\n  \"cert_url\": \"\",\n  \"transmission_id\": \"\",\n  \"transmission_sig\": \"\",\n  \"transmission_time\": \"\",\n  \"webhook_event\": \"\",\n  \"webhook_id\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "77",
     "type": "http",
-    "description": "Deletes a webhook, by ID.",
+    "description": "Lists webhooks event notifications. Use query parameters to filter the response.",
     "result_id": "77",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/{webhook_id}",
-    "method": "DELETE",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "78",
     "type": "http",
-    "description": "Shows details for a webhook, by ID.",
+    "description": "Shows details for a webhooks event notification, by ID.",
     "result_id": "78",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/{webhook_id}",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events/{event_id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "79",
     "type": "http",
-    "description": "Updates a webhook to replace webhook fields with new values. Supports only the `replace` operation. Pass a `json_patch` object with `replace` operation and `path`, which is `/url` for a URL or `/event_types` for events. The `value` is either the URL or a list of events.",
+    "description": "Lists event subscriptions for a webhook, by ID.",
     "result_id": "79",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/{webhook_id}",
-    "method": "PATCH",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks/{webhook_id}/event-types",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{}"
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "80",
     "type": "http",
-    "description": "Resends a webhook event notification, by ID. Any pending notifications are not resent.",
+    "description": "Lists available events to which any webhook can subscribe. For a list of supported events, see [Webhook event names](/docs/api/notifications/webhooks/event-names/).",
     "result_id": "80",
-    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-events/{event_id}/resend",
-    "method": "POST",
+    "url": "https://api-m.sandbox.paypal.com/v1/notifications/webhooks-event-types",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"webhook_ids\": \"\"\n}"
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "81",
@@ -187,8 +202,9 @@
     "url": "https://api-m.sandbox.paypal.com/v1/notifications/simulate-event",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"event_type\": \"\",\n  \"resource_version\": \"\",\n  \"url\": \"\",\n  \"webhook_id\": \"\"\n}"
+    "body": "{\n  \"event_type\": \"\",\n  \"resource_version\": \"\",\n  \"url\": \"\",\n  \"webhook_id\": \"\"\n}",
+    "placeholders": null
   }
 ]

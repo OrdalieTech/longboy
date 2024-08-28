@@ -2,49 +2,53 @@
   {
     "id": "17",
     "type": "http",
-    "description": "Shows details for a product, by ID.",
+    "description": "Creates a product.",
     "result_id": "17",
-    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products/{product_id}",
-    "method": "GET",
+    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products",
+    "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "{\n  \"category\": \"\",\n  \"description\": \"\",\n  \"home_url\": \"\",\n  \"id\": \"\",\n  \"image_url\": \"\",\n  \"name\": \"\",\n  \"type\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "18",
     "type": "http",
-    "description": "Updates a product, by ID. You can patch these attributes and objects:\u003ctable\u003e\u003cthead\u003e\u003ctr\u003e\u003cth\u003eAttribute or object\u003c/th\u003e\u003cth\u003eOperations\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003edescription\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ecategory\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eimage_url\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ehome_url\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
+    "description": "Lists products.",
     "result_id": "18",
-    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products/{product_id}",
-    "method": "PATCH",
+    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{}"
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "19",
     "type": "http",
-    "description": "Creates a product.",
+    "description": "Updates a product, by ID. You can patch these attributes and objects:\u003ctable\u003e\u003cthead\u003e\u003ctr\u003e\u003cth\u003eAttribute or object\u003c/th\u003e\u003cth\u003eOperations\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003edescription\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ecategory\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eimage_url\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ehome_url\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
     "result_id": "19",
-    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products",
-    "method": "POST",
+    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products/{product_id}",
+    "method": "PATCH",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"category\": \"\",\n  \"description\": \"\",\n  \"home_url\": \"\",\n  \"id\": \"\",\n  \"image_url\": \"\",\n  \"name\": \"\",\n  \"type\": \"\"\n}"
+    "body": "{}",
+    "placeholders": null
   },
   {
     "id": "20",
     "type": "http",
-    "description": "Lists products.",
+    "description": "Shows details for a product, by ID.",
     "result_id": "20",
-    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products",
+    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products/{product_id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   }
 ]

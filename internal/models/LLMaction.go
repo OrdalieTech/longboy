@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"longboy/internal/config"
@@ -62,7 +61,6 @@ type LLMAction struct {
 	BaseAction
 	LLMClient
 	ChatCompletionRequest
-	prompt string
 }
 
 func NewLLMClient(clientConfig ClientConfig) *LLMClient {
@@ -240,21 +238,7 @@ func (c *LLMClient) handleNonStreamingResponse(body io.ReadCloser, responseChan 
 }
 
 func (l *LLMAction) Exec(ctx *Context) error {
-	client := NewLLMClient(ClientConfig{
-		Provider:       "openai",
-		DeploymentName: "gpt-4o-mini",
-	})
-	request := ChatCompletionRequest{
-		Models: []string{"gpt-4o-mini"},
-		Messages: []ConvMessage{
-			{Role: "user", Content: strings.TrimSpace(l.prompt)},
-		},
-		Stream:      false,
-		Temperature: 0.7,
-		MaxTokens:   200,
-	}
-
-	respChan, errChan := client.Completion(context.Background(), request)
+	respChan, errChan := l.Completion(context.Background(), l.ChatCompletionRequest)
 
 	select {
 	case responseTxt := <-respChan:

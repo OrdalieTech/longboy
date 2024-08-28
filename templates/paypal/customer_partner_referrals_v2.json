@@ -7,9 +7,10 @@
     "url": "https://api-m.sandbox.paypal.com/v2/customer/partner-referrals",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{}"
+    "body": "{}",
+    "placeholders": null
   },
   {
     "id": "45",
@@ -19,8 +20,9 @@
     "url": "https://api-m.sandbox.paypal.com/v2/customer/partner-referrals/{partner_referral_id}",
     "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   }
 ]

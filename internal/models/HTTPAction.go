@@ -18,10 +18,16 @@ import (
 
 type HTTPAction struct {
 	BaseAction
-	URL     string            `json:"url"`
-	Method  string            `json:"method"`
-	Headers map[string]string `json:"headers"`
-	Body    string            `json:"body"`
+	URL          string                  `json:"url"`
+	Method       string                  `json:"method"`
+	Headers      map[string]string       `json:"headers"`
+	Body         string                  `json:"body"`
+	Placeholders map[string]*Placeholder `json:"placeholders"`
+}
+
+type Placeholder struct {
+	Name string       `json:"name"`
+	Next *Placeholder `json:"next,omitempty"`
 }
 
 func (h *HTTPAction) GetID() string {
@@ -56,37 +62,28 @@ func (h *HTTPAction) Exec(ctx *Context) error {
 
 	body = contextRe.ReplaceAllStringFunc(body, func(match string) string {
 		expr := strings.Trim(match, "[]")
-		parts := strings.Split(expr, ".")
-		var value interface{}
-		var ok bool
-
-		// Get the initial value
-		value, ok = ctx.Results[parts[0]]
+		placeholder, ok := h.Placeholders[expr]
 		if !ok {
-			return match // Return original if not found in context
+			return match // Return original if not found in placeholders
 		}
-
-		// Navigate through the parts
-		for i, part := range parts[1:] {
-			switch v := value.(type) {
-			case map[string]interface{}:
-				value, ok = v[part]
+		value := ctx.Results[placeholder.Name]
+		current := placeholder.Next
+		for current != nil && current.Name != "" {
+			if mapValue, ok := value.(map[string]interface{}); ok {
+				value, ok = mapValue[current.Name]
 				if !ok {
 					return match
 				}
-			case []interface{}:
-				// Check if the part is a number for array indexing
-				index, err := strconv.Atoi(part)
-				if err != nil || index < 0 || index >= len(v) {
+			} else if sliceValue, ok := value.([]interface{}); ok {
+				index, err := strconv.Atoi(current.Name)
+				if err != nil || index < 0 || index >= len(sliceValue) {
 					return match
 				}
-				value = v[index]
-			default:
-				// If we can't navigate further but there are more parts, return original
-				if i < len(parts)-2 {
-					return match
-				}
+				value = sliceValue[index]
+			} else {
+				return match
 			}
+			current = current.Next
 		}
 
 		// Convert the final value to string
@@ -124,13 +121,26 @@ func (h *HTTPAction) Exec(ctx *Context) error {
 		return err
 	}
 	defer resp.Body.Close()
+
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
 	if h.ResultID != "" {
-		ctx.Results[h.ResultID] = string(respBody)
+		// Parse the JSON response
+		var jsonData interface{}
+		err = json.Unmarshal(respBody, &jsonData)
+		if err != nil {
+			log.Printf("Error parsing JSON response: %v", err)
+			// Store the raw response if JSON parsing fails
+			ctx.Results[h.ResultID] = string(respBody)
+		} else {
+			// Store the parsed JSON in ctx.Results
+			ctx.Results[h.ResultID] = jsonData
+		}
+
+		fmt.Printf("Stored in ctx.Results[%s]: %+v\n", h.ResultID, ctx.Results[h.ResultID])
 	}
 
 	return nil
@@ -205,9 +215,7 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 			}
 
 			// Extract headers
-			headers := map[string]string{
-				"Content-Type": "application/json",
-			}
+			headers := make(map[string]string)
 			if parameters, ok := operationMap["parameters"].([]interface{}); ok {
 				for _, param := range parameters {
 					paramMap, ok := param.(map[string]interface{})
@@ -220,6 +228,21 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 						}
 					}
 				}
+			}
+
+			// Extract Content-Type from requestBody
+			if requestBodyMap, ok := operationMap["requestBody"].(map[string]interface{}); ok {
+				if content, ok := requestBodyMap["content"].(map[string]interface{}); ok {
+					for contentType := range content {
+						headers["Content-Type"] = contentType
+						break // Use the first content type found
+					}
+				}
+			}
+
+			// If no Content-Type was found in requestBody, default to application/json
+			if _, ok := headers["Content-Type"]; !ok {
+				headers["Content-Type"] = "application/json"
 			}
 
 			// Check for security schemes in components
@@ -267,11 +290,6 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 
 			fullURL := baseURL + path
 
-			headersMap := make(map[string]string)
-			for _, header := range headers {
-				headersMap[header] = ""
-			}
-
 			id := fmt.Sprintf("%d", utils.GetNextActionID())
 
 			list = append(list, HTTPAction{
@@ -284,7 +302,7 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 				},
 				URL:     fullURL,
 				Method:  strings.ToUpper(method),
-				Headers: headersMap,
+				Headers: headers,
 				Body:    requestBody,
 			})
 		}

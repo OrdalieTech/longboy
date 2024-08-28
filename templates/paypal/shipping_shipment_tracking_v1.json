@@ -2,61 +2,66 @@
   {
     "id": "101",
     "type": "http",
-    "description": "Adds tracking information for a PayPal transaction.",
+    "description": "Adds tracking information, with or without tracking numbers, for multiple PayPal transactions. Accepts up to 20 tracking IDs. For more information, see \u003ca href=\"/docs/tracking/integrate/#add-tracking-information-with-tracking-numbers\"\u003eAdd tracking information with tracking numbers\u003c/a\u003e and \u003ca href=\"/docs/tracking/integrate/#add-tracking-information-without-tracking-numbers\"\u003eAdd tracking information without tracking numbers\u003c/a\u003e.",
     "result_id": "101",
-    "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers",
+    "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers-batch",
     "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "102",
     "type": "http",
-    "description": "Lists tracking information that meet search criteria. The tracking ID is required but the tracking number is optional.",
+    "description": "Adds tracking information for a PayPal transaction.",
     "result_id": "102",
     "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers",
-    "method": "GET",
+    "method": "POST",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "103",
     "type": "http",
-    "description": "Updates or cancels the tracking information for a PayPal transaction, by ID. To cancel tracking information, call this method and set the status to CANCELLED. For more information, see \u003ca href=\"/docs/tracking/integrate/#update-or-cancel-tracking-information\"\u003eUpdate or cancel tracking information\u003c/a\u003e.",
+    "description": "Lists tracking information that meet search criteria. The tracking ID is required but the tracking number is optional.",
     "result_id": "103",
-    "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/{id}",
-    "method": "PUT",
+    "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": "{\n  \"account_id\": \"\",\n  \"carrier\": \"\",\n  \"carrier_name_other\": \"\",\n  \"last_updated_time\": \"\",\n  \"links\": \"\",\n  \"notify_buyer\": \"\",\n  \"postage_payment_id\": \"\",\n  \"quantity\": \"\",\n  \"shipment_date\": \"\",\n  \"shipment_direction\": \"\",\n  \"shipment_uploader\": \"\",\n  \"status\": \"\",\n  \"tracking_number\": \"\",\n  \"tracking_number_type\": \"\",\n  \"tracking_number_validated\": \"\",\n  \"tracking_url\": \"\",\n  \"transaction_id\": \"\"\n}"
+    "body": "",
+    "placeholders": null
   },
   {
     "id": "104",
     "type": "http",
-    "description": "Shows tracking information, by tracker ID, for a PayPal transaction.",
+    "description": "Updates or cancels the tracking information for a PayPal transaction, by ID. To cancel tracking information, call this method and set the status to CANCELLED. For more information, see \u003ca href=\"/docs/tracking/integrate/#update-or-cancel-tracking-information\"\u003eUpdate or cancel tracking information\u003c/a\u003e.",
     "result_id": "104",
     "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/{id}",
-    "method": "GET",
+    "method": "PUT",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "{\n  \"account_id\": \"\",\n  \"carrier\": \"\",\n  \"carrier_name_other\": \"\",\n  \"last_updated_time\": \"\",\n  \"links\": \"\",\n  \"notify_buyer\": \"\",\n  \"postage_payment_id\": \"\",\n  \"quantity\": \"\",\n  \"shipment_date\": \"\",\n  \"shipment_direction\": \"\",\n  \"shipment_uploader\": \"\",\n  \"status\": \"\",\n  \"tracking_number\": \"\",\n  \"tracking_number_type\": \"\",\n  \"tracking_number_validated\": \"\",\n  \"tracking_url\": \"\",\n  \"transaction_id\": \"\"\n}",
+    "placeholders": null
   },
   {
     "id": "105",
     "type": "http",
-    "description": "Adds tracking information, with or without tracking numbers, for multiple PayPal transactions. Accepts up to 20 tracking IDs. For more information, see \u003ca href=\"/docs/tracking/integrate/#add-tracking-information-with-tracking-numbers\"\u003eAdd tracking information with tracking numbers\u003c/a\u003e and \u003ca href=\"/docs/tracking/integrate/#add-tracking-information-without-tracking-numbers\"\u003eAdd tracking information without tracking numbers\u003c/a\u003e.",
+    "description": "Shows tracking information, by tracker ID, for a PayPal transaction.",
     "result_id": "105",
-    "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers-batch",
-    "method": "POST",
+    "url": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/{id}",
+    "method": "GET",
     "headers": {
-      "application/json": ""
+      "Content-Type": "application/json"
     },
-    "body": ""
+    "body": "",
+    "placeholders": null
   }
 ]

@@ -1,11 +1,13 @@
 package models
 
 import (
-	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
@@ -67,31 +69,91 @@ type Trigger struct {
 	Description       *Description      `json:"description"`
 }
 
-func (t Trigger) Exec(ctx *Context) error {
-	client := &http.Client{}
-	req, err := http.NewRequest(t.Method, t.URL, bytes.NewBufferString(t.Body))
+func getActionByID(db *sql.DB, id string) (Action, error) {
+	var data []byte
+	err := db.QueryRow("SELECT data FROM actions WHERE id = ?", id).Scan(&data)
 	if err != nil {
-		return err
-	}
-	for key, value := range t.Headers {
-		req.Header.Set(key, value)
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
+		return nil, err
 	}
 
-	// Update context with the response body if ResultID is provided
-	if t.ResultID != "" {
-		ctx.Results[t.ResultID] = string(respBody)
+	action, err := UnmarshalAction(data)
+	return action, err
+}
+
+func (t *Trigger) Exec(ctx *Context, db *sql.DB) error {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		parsedURL, _ := url.Parse(t.URL)
+		if r.URL.Path != parsedURL.Path {
+			http.NotFound(w, r)
+			return
+		}
+		if r.Method != t.Method {
+			http.Error(w, fmt.Sprintf("Invalid request method, expected %s", t.Method), http.StatusMethodNotAllowed)
+			return
+		}
+		fmt.Println("Webhook received successfully")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Webhook received successfully"))
+
+		// Read the request body
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("Error reading request body: %v", err)
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
+		}
+		defer r.Body.Close()
+
+		// Parse the JSON
+		var jsonData interface{}
+		err = json.Unmarshal(body, &jsonData)
+		if err != nil {
+			log.Printf("Error parsing JSON: %v", err)
+			http.Error(w, "Error parsing JSON", http.StatusBadRequest)
+			return
+		}
+
+		// Store the parsed JSON in ctx.Results
+		ctx.Results[t.ResultID] = jsonData
+
+		// fmt.Printf("Stored in ctx.Results[%s]: %+v\n", t.ResultID, jsonData)
+
+		// Trigger the following action
+		if t.FollowingActionID != "" {
+			// Execute following actions
+			nextActionID := t.FollowingActionID
+			for nextActionID != "" {
+				nextAction, err := getActionByID(db, nextActionID) // Assume this function retrieves the next action by ID
+				if err != nil {
+					log.Printf("failed to get next action: %v", err)
+					break
+				}
+				err = nextAction.Exec(ctx)
+				if err != nil {
+					log.Printf("failed to execute next action: %v", err)
+					break
+				}
+				nextActionID = nextAction.GetFollowingActionID()
+			}
+		}
+	})
+	fmt.Printf("Listening for webhooks on %s...\n", t.URL)
+	// Parse the URL to get the host and port
+	parsedURL, err := url.Parse(t.URL)
+	if err != nil {
+		return fmt.Errorf("failed to parse URL: %v", err)
 	}
 
-	return nil
+	// Use the host and port from the parsed URL, or default to ":3000" if not specified
+	addr := parsedURL.Host
+
+	server := &http.Server{
+		Addr:    addr,
+		Handler: mux,
+	}
+
+	return server.ListenAndServe()
 }
 
 type BaseAction struct {

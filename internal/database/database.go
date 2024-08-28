@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"sync"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -55,17 +54,6 @@ func InitDB(dbPath string) (*sql.DB, error) {
 	}
 
 	return db, nil
-}
-
-func getActionByID(db *sql.DB, id string) (models.Action, error) {
-	var data []byte
-	err := db.QueryRow("SELECT data FROM actions WHERE id = ?", id).Scan(&data)
-	if err != nil {
-		return nil, err
-	}
-
-	action, err := models.UnmarshalAction(data)
-	return action, err
 }
 
 // CreateActionChain inserts a new action chain into the database
@@ -157,37 +145,16 @@ func ActivateActionChain(db *sql.DB, id string) error {
 	}
 
 	// Start the action chain in a new goroutine
-	go func() {
-		ctx := &models.Context{Results: make(map[string]interface{})}
 
-		// Keep the trigger always active
-		for {
-			err := chain.Trigger.Exec(ctx)
-			if err != nil {
-				log.Printf("failed to execute trigger: %v", err)
-				// Optionally, handle the error, e.g., retry, backoff, etc.
-			}
+	ctx := &models.Context{Results: make(map[string]interface{})}
 
-			// Execute following actions
-			nextActionID := chain.Trigger.FollowingActionID
-			for nextActionID != "" {
-				nextAction, err := getActionByID(db, nextActionID) // Assume this function retrieves the next action by ID
-				if err != nil {
-					log.Printf("failed to get next action: %v", err)
-					break
-				}
-				err = nextAction.Exec(ctx)
-				if err != nil {
-					log.Printf("failed to execute next action: %v", err)
-					break
-				}
-				nextActionID = nextAction.GetFollowingActionID()
-			}
-
-			// Optionally add a sleep or wait mechanism to avoid tight looping
-			time.Sleep(time.Second * 5) // Adjust the sleep duration as needed
-		}
-	}()
+	// Keep the trigger always active
+	log.Printf("Executing trigger: %v", chain.Trigger)
+	err = chain.Trigger.Exec(ctx, db)
+	if err != nil {
+		log.Printf("failed to execute trigger: %v", err)
+		// Optionally, handle the error, e.g., retry, backoff, etc.
+	}
 
 	return nil
 }
@@ -267,33 +234,4 @@ func ListActions(db *sql.DB) ([]models.Action, error) {
 	}
 
 	return actions, nil
-}
-
-// MonitorActiveTriggers continuously checks for active triggers and executes them
-func MonitorActiveTriggers(db *sql.DB) {
-	ticker := time.NewTicker(1 * time.Minute) // Adjust the interval as needed
-	defer ticker.Stop()
-
-	for range ticker.C { // Corrected loop
-		// Retrieve all active action chains
-		rows, err := db.Query("SELECT id FROM action_chains WHERE active = 1")
-		if err != nil {
-			log.Printf("Error retrieving active action chains: %v", err)
-			continue
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var id string
-			if err := rows.Scan(&id); err != nil {
-				log.Printf("Error scanning action chain ID: %v", err)
-				continue
-			}
-
-			// Execute the action chain
-			if err := ActivateActionChain(db, id); err != nil {
-				log.Printf("Error executing action chain %s: %v", id, err)
-			}
-		}
-	}
 }
