@@ -10,6 +10,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"longboy/internal/config"
@@ -61,6 +64,8 @@ type LLMAction struct {
 	BaseAction
 	LLMClient
 	ChatCompletionRequest
+	Provider       string `json:"provider"`
+	DeploymentName string `json:"deployment_name"`
 }
 
 func NewLLMClient(clientConfig ClientConfig) *LLMClient {
@@ -119,12 +124,17 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 		defer close(responseChan)
 		defer close(errChan)
 
+		log.Printf("Starting completion attempt with %d models", len(request.Models))
+		log.Printf("Base URL: %s", c.baseURL)
+
 		for _, model := range request.Models {
 			select {
 			case <-ctx.Done():
 				errChan <- ctx.Err()
 				return
 			default:
+				log.Printf("Attempting completion with model: %s", model)
+
 				requestBody := map[string]interface{}{
 					"model":       model,
 					"messages":    request.Messages,
@@ -135,11 +145,14 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 
 				jsonBody, err := json.Marshal(requestBody)
 				if err != nil {
+					log.Printf("Error marshaling request for model %s: %v", model, err)
 					errChan <- fmt.Errorf("error marshaling request for model %s: %v", model, err)
 					continue
 				}
+
 				req, err := http.NewRequestWithContext(ctx, "POST", c.baseURL, bytes.NewReader(jsonBody))
 				if err != nil {
+					log.Printf("Error creating request for model %s: %v", model, err)
 					errChan <- fmt.Errorf("error creating request for model %s: %v", model, err)
 					continue
 				}
@@ -148,18 +161,25 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 				req.Header.Set("api-key", c.apiKey)
 				req.Header.Set("Content-Type", "application/json")
 
+				log.Printf("Sending request for model %s", model)
 				resp, err := c.httpClient.Do(req)
 				if err != nil {
+					log.Printf("Error making request for model %s: %v", model, err)
 					errChan <- fmt.Errorf("error making request for model %s: %v", model, err)
 					continue
 				}
 				defer resp.Body.Close()
 
+				log.Printf("Received response for model %s with status code: %d", model, resp.StatusCode)
+
 				if resp.StatusCode != http.StatusOK {
 					body, _ := io.ReadAll(resp.Body)
+					log.Printf("Model %s failed with status code: %d\nResponse body: %s", model, resp.StatusCode, string(body))
 					errChan <- fmt.Errorf("model %s failed with status code: %d\nResponse body: %s", model, resp.StatusCode, string(body))
 					continue
 				}
+
+				log.Printf("Successfully received response for model %s", model)
 
 				if request.Stream {
 					c.handleStreamingResponse(resp.Body, responseChan, errChan)
@@ -170,6 +190,7 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 			}
 		}
 
+		log.Printf("All models failed")
 		errChan <- fmt.Errorf("all models failed")
 	}()
 
@@ -238,6 +259,68 @@ func (c *LLMClient) handleNonStreamingResponse(body io.ReadCloser, responseChan 
 }
 
 func (l *LLMAction) Exec(ctx *Context) error {
+	fmt.Printf("LLMAction: %+v\n", l)
+	l.LLMClient = *NewLLMClient(ClientConfig{
+		Provider:       l.Provider,
+		DeploymentName: l.DeploymentName,
+	})
+	fmt.Printf("LLMClient: %+v\n", l.LLMClient)
+
+	for i := range l.ChatCompletionRequest.Messages {
+		body := l.ChatCompletionRequest.Messages[i].Content
+		secretRe := regexp.MustCompile(`{{(.+?)}}`)
+		contextRe := regexp.MustCompile(`\[\[(.+?)\]\]`)
+
+		body = secretRe.ReplaceAllStringFunc(body, func(match string) string {
+			key := strings.Trim(match, "{}")
+			return config.GetConfig().GetSecret(key)
+		})
+
+		body = contextRe.ReplaceAllStringFunc(body, func(match string) string {
+			expr := strings.Trim(match, "[]")
+			placeholder, ok := l.Placeholders[expr]
+			if !ok {
+				return match // Return original if not found in placeholders
+			}
+			value := ctx.Results[placeholder.Name]
+			current := placeholder.Next
+			for current != nil && current.Name != "" {
+				if mapValue, ok := value.(map[string]interface{}); ok {
+					value, ok = mapValue[current.Name]
+					if !ok {
+						return match
+					}
+				} else if sliceValue, ok := value.([]interface{}); ok {
+					index, err := strconv.Atoi(current.Name)
+					if err != nil || index < 0 || index >= len(sliceValue) {
+						return match
+					}
+					value = sliceValue[index]
+				} else {
+					return match
+				}
+				current = current.Next
+			}
+
+			// Convert the final value to string
+			switch v := value.(type) {
+			case string:
+				return v
+			case []byte:
+				return string(v)
+			default:
+				jsonBytes, err := json.Marshal(v)
+				if err != nil {
+					log.Printf("Error marshaling context value for expression %s: %v", expr, err)
+					return match
+				}
+				return string(jsonBytes)
+			}
+		})
+		l.ChatCompletionRequest.Messages[i].Content = body
+		fmt.Printf("Message %d: %s\n", i, l.ChatCompletionRequest.Messages[i].Content)
+	}
+	fmt.Printf("ChatCompletionRequest: %+v\n", l.ChatCompletionRequest)
 	respChan, errChan := l.Completion(context.Background(), l.ChatCompletionRequest)
 
 	select {
@@ -245,8 +328,8 @@ func (l *LLMAction) Exec(ctx *Context) error {
 		ctx.Results[l.ResultID] = responseTxt
 		return nil
 	case err := <-errChan:
-		log.Printf("Error in generate_augmented_queries: %v", err)
-		return l.Exec(ctx)
+		log.Printf("Error in Completion: %v", err)
+		return err
 	}
 }
 

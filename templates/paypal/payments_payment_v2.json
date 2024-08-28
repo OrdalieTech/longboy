@@ -2,92 +2,92 @@
   {
     "id": "88",
     "type": "http",
-    "description": "Reauthorizes an authorized PayPal account payment, by ID. To ensure that funds are still available, reauthorize a payment after its initial three-day honor period expires. Within the 29-day authorization period, you can issue multiple re-authorizations after the honor period expires.\u003cbr/\u003e\u003cbr/\u003eIf 30 days have transpired since the date of the original authorization, you must create an authorized payment instead of reauthorizing the original authorized payment.\u003cbr/\u003e\u003cbr/\u003eA reauthorized payment itself has a new honor period of three days.\u003cbr/\u003e\u003cbr/\u003eYou can reauthorize an authorized payment from 4 to 29 days after the 3-day honor period. The allowed amount depends on context and geography, for example in US it is up to 115% of the original authorized amount, not to exceed an increase of $75 USD.\u003cbr/\u003e\u003cbr/\u003eSupports only the `amount` request parameter.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e This request is currently not supported for Partner use cases.\u003c/blockquote\u003e",
-    "result_id": "88",
-    "url": "https://api-m.sandbox.paypal.com/v2/payments/authorizations/{authorization_id}/reauthorize",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"amount\": \"\"\n}",
-    "placeholders": null
-  },
-  {
-    "id": "89",
-    "type": "http",
-    "description": "Voids, or cancels, an authorized payment, by ID. You cannot void an authorized payment that has been fully captured.",
-    "result_id": "89",
-    "url": "https://api-m.sandbox.paypal.com/v2/payments/authorizations/{authorization_id}/void",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "",
-    "placeholders": null
-  },
-  {
-    "id": "90",
-    "type": "http",
-    "description": "Shows details for a captured payment, by ID.",
-    "result_id": "90",
-    "url": "https://api-m.sandbox.paypal.com/v2/payments/captures/{capture_id}",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "",
-    "placeholders": null
-  },
-  {
-    "id": "91",
-    "type": "http",
-    "description": "Refunds a captured payment, by ID. For a full refund, include an empty payload in the JSON request body. For a partial refund, include an \u003ccode\u003eamount\u003c/code\u003e object in the JSON request body.",
-    "result_id": "91",
-    "url": "https://api-m.sandbox.paypal.com/v2/payments/captures/{capture_id}/refund",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"amount\": \"\",\n  \"custom_id\": \"\",\n  \"invoice_id\": \"\",\n  \"note_to_payer\": \"\",\n  \"payment_instruction\": \"\"\n}",
-    "placeholders": null
-  },
-  {
-    "id": "92",
-    "type": "http",
     "description": "Shows details for a refund, by ID.",
-    "result_id": "92",
+    "result_id": "88",
+    "placeholders": null,
     "url": "https://api-m.sandbox.paypal.com/v2/payments/refunds/{refund_id}",
     "method": "GET",
     "headers": {
       "Content-Type": "application/json"
     },
-    "body": "",
-    "placeholders": null
+    "body": ""
   },
   {
-    "id": "93",
+    "id": "89",
     "type": "http",
     "description": "Shows details for an authorized payment, by ID.",
-    "result_id": "93",
+    "result_id": "89",
+    "placeholders": null,
     "url": "https://api-m.sandbox.paypal.com/v2/payments/authorizations/{authorization_id}",
     "method": "GET",
     "headers": {
       "Content-Type": "application/json"
     },
-    "body": "",
-    "placeholders": null
+    "body": ""
   },
   {
-    "id": "94",
+    "id": "90",
     "type": "http",
     "description": "Captures an authorized payment, by ID.",
-    "result_id": "94",
+    "result_id": "90",
+    "placeholders": null,
     "url": "https://api-m.sandbox.paypal.com/v2/payments/authorizations/{authorization_id}/capture",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json"
     },
-    "body": "{}",
-    "placeholders": null
+    "body": "{}"
+  },
+  {
+    "id": "91",
+    "type": "http",
+    "description": "Reauthorizes an authorized PayPal account payment, by ID. To ensure that funds are still available, reauthorize a payment after its initial three-day honor period expires. Within the 29-day authorization period, you can issue multiple re-authorizations after the honor period expires.\u003cbr/\u003e\u003cbr/\u003eIf 30 days have transpired since the date of the original authorization, you must create an authorized payment instead of reauthorizing the original authorized payment.\u003cbr/\u003e\u003cbr/\u003eA reauthorized payment itself has a new honor period of three days.\u003cbr/\u003e\u003cbr/\u003eYou can reauthorize an authorized payment from 4 to 29 days after the 3-day honor period. The allowed amount depends on context and geography, for example in US it is up to 115% of the original authorized amount, not to exceed an increase of $75 USD.\u003cbr/\u003e\u003cbr/\u003eSupports only the `amount` request parameter.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e This request is currently not supported for Partner use cases.\u003c/blockquote\u003e",
+    "result_id": "91",
+    "placeholders": null,
+    "url": "https://api-m.sandbox.paypal.com/v2/payments/authorizations/{authorization_id}/reauthorize",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\n  \"amount\": \"\"\n}"
+  },
+  {
+    "id": "92",
+    "type": "http",
+    "description": "Voids, or cancels, an authorized payment, by ID. You cannot void an authorized payment that has been fully captured.",
+    "result_id": "92",
+    "placeholders": null,
+    "url": "https://api-m.sandbox.paypal.com/v2/payments/authorizations/{authorization_id}/void",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": ""
+  },
+  {
+    "id": "93",
+    "type": "http",
+    "description": "Shows details for a captured payment, by ID.",
+    "result_id": "93",
+    "placeholders": null,
+    "url": "https://api-m.sandbox.paypal.com/v2/payments/captures/{capture_id}",
+    "method": "GET",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": ""
+  },
+  {
+    "id": "94",
+    "type": "http",
+    "description": "Refunds a captured payment, by ID. For a full refund, include an empty payload in the JSON request body. For a partial refund, include an \u003ccode\u003eamount\u003c/code\u003e object in the JSON request body.",
+    "result_id": "94",
+    "placeholders": null,
+    "url": "https://api-m.sandbox.paypal.com/v2/payments/captures/{capture_id}/refund",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{\n  \"amount\": \"\",\n  \"custom_id\": \"\",\n  \"invoice_id\": \"\",\n  \"note_to_payer\": \"\",\n  \"payment_instruction\": \"\"\n}"
   }
 ]

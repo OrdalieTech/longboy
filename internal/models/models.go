@@ -153,15 +153,23 @@ func (t *Trigger) Exec(ctx *Context, db *sql.DB) error {
 		Handler: mux,
 	}
 
-	return server.ListenAndServe()
+	go server.ListenAndServe()
+
+	return nil
+}
+
+type Placeholder struct {
+	Name string       `json:"name"`
+	Next *Placeholder `json:"next,omitempty"`
 }
 
 type BaseAction struct {
-	ID                string `json:"id"`
-	Type              string `json:"type"`
-	Description       string `json:"description"`
-	ResultID          string `json:"result_id,omitempty"`
-	FollowingActionID string `json:"following_action_id,omitempty"`
+	ID                string                  `json:"id"`
+	Type              string                  `json:"type"`
+	Description       string                  `json:"description"`
+	ResultID          string                  `json:"result_id,omitempty"`
+	FollowingActionID string                  `json:"following_action_id,omitempty"`
+	Placeholders      map[string]*Placeholder `json:"placeholders"`
 }
 
 type Action interface {

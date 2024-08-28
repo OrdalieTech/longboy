@@ -18,16 +18,10 @@ import (
 
 type HTTPAction struct {
 	BaseAction
-	URL          string                  `json:"url"`
-	Method       string                  `json:"method"`
-	Headers      map[string]string       `json:"headers"`
-	Body         string                  `json:"body"`
-	Placeholders map[string]*Placeholder `json:"placeholders"`
-}
-
-type Placeholder struct {
-	Name string       `json:"name"`
-	Next *Placeholder `json:"next,omitempty"`
+	URL     string            `json:"url"`
+	Method  string            `json:"method"`
+	Headers map[string]string `json:"headers"`
+	Body    string            `json:"body"`
 }
 
 func (h *HTTPAction) GetID() string {
@@ -101,8 +95,32 @@ func (h *HTTPAction) Exec(ctx *Context) error {
 			return string(jsonBytes)
 		}
 	})
+	fmt.Printf("Body before processing: %s\n", body)
 
-	req, err := http.NewRequest(h.Method, h.URL, bytes.NewBufferString(body))
+	var bodyReader io.Reader
+	if h.Headers["Content-Type"] == "application/json" {
+		// Parse the body as JSON and re-encode it to ensure it's valid
+		var jsonBody map[string]interface{}
+		if err := json.Unmarshal([]byte(body), &jsonBody); err != nil {
+			// If unmarshaling fails, try to clean up the string
+			cleanBody := strings.Replace(body, "\n", "\\n", -1)
+			cleanBody = strings.Replace(cleanBody, "\r", "\\r", -1)
+			if err := json.Unmarshal([]byte(cleanBody), &jsonBody); err != nil {
+				return fmt.Errorf("invalid JSON body: %v", err)
+			}
+		}
+		encodedBody, err := json.Marshal(jsonBody)
+		if err != nil {
+			return fmt.Errorf("failed to encode JSON body: %v", err)
+		}
+		bodyReader = bytes.NewBuffer(encodedBody)
+	} else {
+		bodyReader = bytes.NewBufferString(body)
+	}
+
+	fmt.Printf("Body after processing: %s\n", bodyReader)
+
+	req, err := http.NewRequest(h.Method, h.URL, bodyReader)
 	if err != nil {
 		return err
 	}
