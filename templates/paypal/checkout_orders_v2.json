@@ -2,34 +2,8 @@
   {
     "id": "21",
     "type": "http",
-    "description": "Adds tracking information for an Order.",
-    "result_id": "21",
-    "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}/track",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{}",
-    "placeholders": null
-  },
-  {
-    "id": "22",
-    "type": "http",
-    "description": "Updates or cancels the tracking information for a PayPal order, by ID. Updatable attributes or objects:\u003cbr/\u003e\u003cbr/\u003e\u003ctable\u003e\u003cthead\u003e\u003cth\u003eAttribute\u003c/th\u003e\u003cth\u003eOp\u003c/th\u003e\u003cth\u003eNotes\u003c/th\u003e\u003c/thead\u003e\u003ctbody\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eitems\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003eUsing replace op for \u003ccode\u003eitems\u003c/code\u003e will replace the entire \u003ccode\u003eitems\u003c/code\u003e object with the value sent in request.\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003enotify_payer\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003estatus\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003eOnly patching status to CANCELLED is currently supported.\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
-    "result_id": "22",
-    "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}/trackers/{tracker_id}",
-    "method": "PATCH",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{}",
-    "placeholders": null
-  },
-  {
-    "id": "23",
-    "type": "http",
     "description": "Creates an order. Merchants and partners can add Level 2 and 3 data to payments to reduce risk and payment processing costs. For more information about processing payments, see \u003ca href=\"https://developer.paypal.com/docs/checkout/advanced/processing/\"\u003echeckout\u003c/a\u003e or \u003ca href=\"https://developer.paypal.com/docs/multiparty/checkout/advanced/processing/\"\u003emultiparty checkout\u003c/a\u003e.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e For error handling and troubleshooting, see \u003ca href=\"/api/rest/reference/orders/v2/errors/#create-order\"\u003eOrders v2 errors\u003c/a\u003e.\u003c/blockquote\u003e",
-    "result_id": "23",
+    "result_id": "21",
     "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders",
     "method": "POST",
     "headers": {
@@ -39,23 +13,10 @@
     "placeholders": null
   },
   {
-    "id": "24",
-    "type": "http",
-    "description": "Updates an order with a `CREATED` or `APPROVED` status. You cannot update an order with the `COMPLETED` status.\u003cbr/\u003e\u003cbr/\u003eTo make an update, you must provide a `reference_id`. If you omit this value with an order that contains only one purchase unit, PayPal sets the value to `default` which enables you to use the path: \u003ccode\u003e\\\"/purchase_units/@reference_id=='default'/{attribute-or-object}\\\"\u003c/code\u003e. Merchants and partners can add Level 2 and 3 data to payments to reduce risk and payment processing costs. For more information about processing payments, see \u003ca href=\"https://developer.paypal.com/docs/checkout/advanced/processing/\"\u003echeckout\u003c/a\u003e or \u003ca href=\"https://developer.paypal.com/docs/multiparty/checkout/advanced/processing/\"\u003emultiparty checkout\u003c/a\u003e.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e For error handling and troubleshooting, see \u003ca href=\\\"/api/rest/reference/orders/v2/errors/#patch-order\\\"\u003eOrders v2 errors\u003c/a\u003e.\u003c/blockquote\u003ePatchable attributes or objects:\u003cbr/\u003e\u003cbr/\u003e\u003ctable\u003e\u003cthead\u003e\u003cth\u003eAttribute\u003c/th\u003e\u003cth\u003eOp\u003c/th\u003e\u003cth\u003eNotes\u003c/th\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eintent\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayer\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003eUsing replace op for \u003ccode\u003epayer\u003c/code\u003e will replace the whole \u003ccode\u003epayer\u003c/code\u003e object with the value sent in request.\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].custom_id\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].description\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].payee.email\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].shipping.name\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].shipping.address\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].shipping.type\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].soft_descriptor\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].amount\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].items\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].invoice_id\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].payment_instruction\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].payment_instruction.disbursement_mode\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003eBy default, \u003ccode\u003edisbursement_mode\u003c/code\u003e is \u003ccode\u003eINSTANT\u003c/code\u003e.\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].payment_instruction.platform_fees\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].supplementary_data.airline\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].supplementary_data.card\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eapplication_context.client_configuration\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
-    "result_id": "24",
-    "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}",
-    "method": "PATCH",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "",
-    "placeholders": null
-  },
-  {
-    "id": "25",
+    "id": "22",
     "type": "http",
     "description": "Shows details for an order, by ID.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e For error handling and troubleshooting, see \u003ca href=\"/api/rest/reference/orders/v2/errors/#get-order\"\u003eOrders v2 errors\u003c/a\u003e.\u003c/blockquote\u003e",
-    "result_id": "25",
+    "result_id": "22",
     "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}",
     "method": "GET",
     "headers": {
@@ -65,10 +26,23 @@
     "placeholders": null
   },
   {
-    "id": "26",
+    "id": "23",
+    "type": "http",
+    "description": "Updates an order with a `CREATED` or `APPROVED` status. You cannot update an order with the `COMPLETED` status.\u003cbr/\u003e\u003cbr/\u003eTo make an update, you must provide a `reference_id`. If you omit this value with an order that contains only one purchase unit, PayPal sets the value to `default` which enables you to use the path: \u003ccode\u003e\\\"/purchase_units/@reference_id=='default'/{attribute-or-object}\\\"\u003c/code\u003e. Merchants and partners can add Level 2 and 3 data to payments to reduce risk and payment processing costs. For more information about processing payments, see \u003ca href=\"https://developer.paypal.com/docs/checkout/advanced/processing/\"\u003echeckout\u003c/a\u003e or \u003ca href=\"https://developer.paypal.com/docs/multiparty/checkout/advanced/processing/\"\u003emultiparty checkout\u003c/a\u003e.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e For error handling and troubleshooting, see \u003ca href=\\\"/api/rest/reference/orders/v2/errors/#patch-order\\\"\u003eOrders v2 errors\u003c/a\u003e.\u003c/blockquote\u003ePatchable attributes or objects:\u003cbr/\u003e\u003cbr/\u003e\u003ctable\u003e\u003cthead\u003e\u003cth\u003eAttribute\u003c/th\u003e\u003cth\u003eOp\u003c/th\u003e\u003cth\u003eNotes\u003c/th\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eintent\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epayer\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003eUsing replace op for \u003ccode\u003epayer\u003c/code\u003e will replace the whole \u003ccode\u003epayer\u003c/code\u003e object with the value sent in request.\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].custom_id\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].description\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].payee.email\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].shipping.name\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].shipping.address\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].shipping.type\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].soft_descriptor\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].amount\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].items\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].invoice_id\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].payment_instruction\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].payment_instruction.disbursement_mode\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003eBy default, \u003ccode\u003edisbursement_mode\u003c/code\u003e is \u003ccode\u003eINSTANT\u003c/code\u003e.\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].payment_instruction.platform_fees\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].supplementary_data.airline\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003epurchase_units[].supplementary_data.card\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add, remove\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eapplication_context.client_configuration\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
+    "result_id": "23",
+    "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}",
+    "method": "PATCH",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "",
+    "placeholders": null
+  },
+  {
+    "id": "24",
     "type": "http",
     "description": "Payer confirms their intent to pay for the the Order with the given payment source.",
-    "result_id": "26",
+    "result_id": "24",
     "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}/confirm-payment-source",
     "method": "POST",
     "headers": {
@@ -78,10 +52,10 @@
     "placeholders": null
   },
   {
-    "id": "27",
+    "id": "25",
     "type": "http",
     "description": "Authorizes payment for an order. To successfully authorize payment for an order, the buyer must first approve the order or a valid payment_source must be provided in the request. A buyer can approve the order upon being redirected to the rel:approve URL that was returned in the HATEOAS links in the create order response.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e For error handling and troubleshooting, see \u003ca href=\"/api/rest/reference/orders/v2/errors/#authorize-order\"\u003eOrders v2 errors\u003c/a\u003e.\u003c/blockquote\u003e",
-    "result_id": "27",
+    "result_id": "25",
     "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}/authorize",
     "method": "POST",
     "headers": {
@@ -91,16 +65,42 @@
     "placeholders": null
   },
   {
-    "id": "28",
+    "id": "26",
     "type": "http",
     "description": "Captures payment for an order. To successfully capture payment for an order, the buyer must first approve the order or a valid payment_source must be provided in the request. A buyer can approve the order upon being redirected to the rel:approve URL that was returned in the HATEOAS links in the create order response.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e For error handling and troubleshooting, see \u003ca href=\"/api/rest/reference/orders/v2/errors/#capture-order\"\u003eOrders v2 errors\u003c/a\u003e.\u003c/blockquote\u003e",
-    "result_id": "28",
+    "result_id": "26",
     "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}/capture",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json"
     },
     "body": "{\n  \"payment_source\": \"\"\n}",
+    "placeholders": null
+  },
+  {
+    "id": "27",
+    "type": "http",
+    "description": "Adds tracking information for an Order.",
+    "result_id": "27",
+    "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}/track",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{}",
+    "placeholders": null
+  },
+  {
+    "id": "28",
+    "type": "http",
+    "description": "Updates or cancels the tracking information for a PayPal order, by ID. Updatable attributes or objects:\u003cbr/\u003e\u003cbr/\u003e\u003ctable\u003e\u003cthead\u003e\u003cth\u003eAttribute\u003c/th\u003e\u003cth\u003eOp\u003c/th\u003e\u003cth\u003eNotes\u003c/th\u003e\u003c/thead\u003e\u003ctbody\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eitems\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003eUsing replace op for \u003ccode\u003eitems\u003c/code\u003e will replace the entire \u003ccode\u003eitems\u003c/code\u003e object with the value sent in request.\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003enotify_payer\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace, add\u003c/td\u003e\u003ctd\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003estatus\u003c/code\u003e\u003c/td\u003e\u003ctd\u003ereplace\u003c/td\u003e\u003ctd\u003eOnly patching status to CANCELLED is currently supported.\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
+    "result_id": "28",
+    "url": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{id}/trackers/{tracker_id}",
+    "method": "PATCH",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{}",
     "placeholders": null
   }
 ]

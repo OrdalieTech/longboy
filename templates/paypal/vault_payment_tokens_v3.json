@@ -2,27 +2,27 @@
   {
     "id": "106",
     "type": "http",
-    "description": "Returns all payment tokens for a customer.",
-    "result_id": "106",
-    "url": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "",
-    "placeholders": null
-  },
-  {
-    "id": "107",
-    "type": "http",
     "description": "Creates a Payment Token from the given payment source and adds it to the Vault of the associated customer.",
-    "result_id": "107",
+    "result_id": "106",
     "url": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens",
     "method": "POST",
     "headers": {
       "Content-Type": "application/json"
     },
     "body": "{\n  \"customer\": \"\",\n  \"metadata\": \"\",\n  \"payment_source\": \"\"\n}",
+    "placeholders": null
+  },
+  {
+    "id": "107",
+    "type": "http",
+    "description": "Returns all payment tokens for a customer.",
+    "result_id": "107",
+    "url": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens",
+    "method": "GET",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "",
     "placeholders": null
   },
   {
