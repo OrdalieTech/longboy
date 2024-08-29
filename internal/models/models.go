@@ -1,7 +1,6 @@
 package models
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,26 +12,28 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"gorm.io/gorm"
 )
 
 type Context struct {
-	Results map[string]interface{}
+	Results map[string]interface{} `json:"results" gorm:"serializer:json"`
 }
 
 type Description struct {
-	Description            string `json:"description"`
-	Author                 string `json:"author"`
-	CreationDate           string `json:"creation_date"`
-	LastUpdate             string `json:"last_update"`
-	Version                string `json:"version"`
-	Inputs                 string `json:"inputs"`
-	Outputs                string `json:"outputs"`
-	Dependencies           string `json:"dependencies"`
-	UsageExamples          string `json:"usage_examples"`
-	ErrorHandling          string `json:"error_handling"`
-	RelatedActions         string `json:"related_actions"`
-	SecurityConsiderations string `json:"security_considerations"`
-	Licensing              string `json:"licensing"`
+	Description            string `json:"description" gorm:"type:text"`
+	Author                 string `json:"author" gorm:"type:varchar(100)"`
+	CreationDate           string `json:"creation_date" gorm:"type:varchar(20)"`
+	LastUpdate             string `json:"last_update" gorm:"type:varchar(20)"`
+	Version                string `json:"version" gorm:"type:varchar(20)"`
+	Inputs                 string `json:"inputs" gorm:"type:text"`
+	Outputs                string `json:"outputs" gorm:"type:text"`
+	Dependencies           string `json:"dependencies" gorm:"type:text"`
+	UsageExamples          string `json:"usage_examples" gorm:"type:text"`
+	ErrorHandling          string `json:"error_handling" gorm:"type:text"`
+	RelatedActions         string `json:"related_actions" gorm:"type:text"`
+	SecurityConsiderations string `json:"security_considerations" gorm:"type:text"`
+	Licensing              string `json:"licensing" gorm:"type:text"`
 }
 
 // Print method to display the Description details neatly
@@ -53,36 +54,32 @@ func (d Description) Print() {
 }
 
 type ActionChain struct {
-	ID          string       `json:"id"`
-	Trigger     *Trigger     `json:"trigger"`
-	Context     *Context     `json:"context"`
-	Description *Description `json:"description"`
+	ID          string       `json:"id" gorm:"primaryKey"`
+	Trigger     *Trigger     `json:"trigger" gorm:"serializer:json"`
+	Context     *Context     `json:"context" gorm:"serializer:json"`
+	Description *Description `json:"description" gorm:"serializer:json"`
+	Active      bool         `json:"active" gorm:"default:false"`
 }
 
 type Trigger struct {
-	ID                string            `json:"id"`
-	Type              string            `json:"type"`
-	URL               string            `json:"url"`
-	Method            string            `json:"method"`
-	Headers           map[string]string `json:"headers"`
-	Body              string            `json:"body"`
-	ResultID          string            `json:"result_id,omitempty"`
-	FollowingActionID string            `json:"following_action_id,omitempty"`
-	Description       *Description      `json:"description"`
+	ID                string            `json:"id" gorm:"type:varchar(100)"`
+	Type              string            `json:"type" gorm:"type:varchar(50)"`
+	URL               string            `json:"url" gorm:"type:text"`
+	Method            string            `json:"method" gorm:"type:varchar(10)"`
+	Headers           map[string]string `json:"headers" gorm:"serializer:json"`
+	Body              string            `json:"body" gorm:"type:text"`
+	ResultID          string            `json:"result_id,omitempty" gorm:"type:varchar(100)"`
+	FollowingActionID string            `json:"following_action_id,omitempty" gorm:"type:varchar(100)"`
+	Description       *Description      `json:"description" gorm:"serializer:json"`
 }
 
-func getActionByID(db *sql.DB, id string) (Action, error) {
-	var data []byte
-	err := db.QueryRow("SELECT data FROM actions WHERE id = ?", id).Scan(&data)
-	if err != nil {
-		return Action{}, err
-	}
-
-	action, err := UnmarshalAction(data)
+func getActionByID(db *gorm.DB, id string) (Action, error) {
+	var action Action
+	err := db.First(&action, "id = ?", id).Error
 	return action, err
 }
 
-func (t *Trigger) Exec(ctx *Context, db *sql.DB) error {
+func (t *Trigger) Exec(ctx *Context, db *gorm.DB) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		parsedURL, _ := url.Parse(t.URL)
@@ -126,7 +123,7 @@ func (t *Trigger) Exec(ctx *Context, db *sql.DB) error {
 			// Execute following actions
 			nextActionID := t.FollowingActionID
 			for nextActionID != "" {
-				nextAction, err := getActionByID(db, nextActionID) // Assume this function retrieves the next action by ID
+				nextAction, err := getActionByID(db, nextActionID)
 				if err != nil {
 					log.Printf("failed to get next action: %v", err)
 					break
@@ -161,18 +158,18 @@ func (t *Trigger) Exec(ctx *Context, db *sql.DB) error {
 }
 
 type Placeholder struct {
-	Name string       `json:"name"`
-	Next *Placeholder `json:"next,omitempty"`
+	Name string       `json:"name" gorm:"type:varchar(100)"`
+	Next *Placeholder `json:"next,omitempty" gorm:"serializer:json"`
 }
 
 type Action struct {
-	ID                string                  `json:"id"`
-	Type              string                  `json:"type"`
-	Description       string                  `json:"description"`
-	ResultID          string                  `json:"result_id,omitempty"`
-	FollowingActionID string                  `json:"following_action_id,omitempty"`
-	Placeholders      map[string]*Placeholder `json:"placeholders"`
-	Metadata          map[string]interface{}  `json:"metadata"`
+	ID                string                  `json:"id" gorm:"primaryKey"`
+	Type              string                  `json:"type" gorm:"type:varchar(50)"`
+	Description       string                  `json:"description" gorm:"type:text"`
+	ResultID          string                  `json:"result_id,omitempty" gorm:"type:varchar(100)"`
+	FollowingActionID string                  `json:"following_action_id,omitempty" gorm:"type:varchar(100)"`
+	Placeholders      map[string]*Placeholder `json:"placeholders" gorm:"serializer:json"`
+	Metadata          map[string]interface{}  `json:"metadata" gorm:"serializer:json"`
 }
 
 type ActionOld interface {
@@ -183,60 +180,6 @@ type ActionOld interface {
 	Exec(ctx *Context) error
 	GetResultID() string
 	GetFollowingActionID() string
-}
-
-func UnmarshalAction(data []byte) (Action, error) {
-	var action Action
-	if err := json.Unmarshal(data, &action); err != nil {
-		return Action{}, err
-	}
-
-	/*switch baseAction.Type {
-	case "http":
-		var httpAction HTTPAction
-		if err := json.Unmarshal(data, &httpAction); err != nil {
-			return nil, err
-		}
-		action = &httpAction
-	case "llm":
-		var llmAction LLMAction
-		if err := json.Unmarshal(data, &llmAction); err != nil {
-			return nil, err
-		}
-		action = &llmAction
-	case "code":
-		var codeAction CodeAction
-		if err := json.Unmarshal(data, &codeAction); err != nil {
-			return nil, err
-		}
-		action = &codeAction
-	case "if_then":
-		var ifThenAction IfThenAction
-		if err := json.Unmarshal(data, &ifThenAction); err != nil {
-			return nil, err
-		}
-		action = &ifThenAction
-	case "loop":
-		var loopAction LoopAction
-		if err := json.Unmarshal(data, &loopAction); err != nil {
-			return nil, err
-		}
-		action = &loopAction
-	case "branch":
-		var branchAction BranchAction
-		if err := json.Unmarshal(data, &branchAction); err != nil {
-			return nil, err
-		}
-		action = &branchAction
-	default:
-		return nil, fmt.Errorf("unknown action type: %s", baseAction.Type)
-	}*/
-
-	return action, nil
-}
-
-func MarshalAction(action Action) ([]byte, error) {
-	return json.Marshal(action)
 }
 
 func evaluateCondition(condition string, ctx *Context) (bool, error) {

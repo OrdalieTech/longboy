@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,14 +8,15 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"longboy/internal/config"
 	"longboy/internal/database"
 	"longboy/internal/models"
+
+	"gorm.io/gorm"
 )
 
-func SetupRoutes(db *sql.DB) {
+func SetupRoutes(db *gorm.DB) {
 	http.HandleFunc("/actionchains", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodPost:
@@ -72,7 +72,7 @@ func SetupRoutes(db *sql.DB) {
 		case http.MethodGet:
 			handleGetAction(db, w, id)
 		case http.MethodPut:
-			handleUpdateAction(db, w, r, id)
+			handleUpdateAction(db, w, r)
 		case http.MethodDelete:
 			handleDeleteAction(db, w, id)
 		default:
@@ -91,7 +91,7 @@ func SetupRoutes(db *sql.DB) {
 }
 
 // ActionChain Handlers
-func handleCreateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func handleCreateActionChain(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var chain models.ActionChain
 	err := json.NewDecoder(r.Body).Decode(&chain)
 	if err != nil {
@@ -111,7 +111,7 @@ func handleCreateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(chain)
 }
 
-func handleGetActionChain(db *sql.DB, w http.ResponseWriter, id string) {
+func handleGetActionChain(db *gorm.DB, w http.ResponseWriter, id string) {
 	chain, err := database.GetActionChain(db, id)
 	if err != nil {
 		log.Printf("Error getting action chain: %v", err)
@@ -122,7 +122,7 @@ func handleGetActionChain(db *sql.DB, w http.ResponseWriter, id string) {
 	json.NewEncoder(w).Encode(chain)
 }
 
-func handleUpdateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func handleUpdateActionChain(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var chain models.ActionChain
 	err := json.NewDecoder(r.Body).Decode(&chain)
 	if err != nil {
@@ -140,7 +140,7 @@ func handleUpdateActionChain(db *sql.DB, w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusOK)
 }
 
-func handleDeleteActionChain(db *sql.DB, w http.ResponseWriter, id string) {
+func handleDeleteActionChain(db *gorm.DB, w http.ResponseWriter, id string) {
 	err := database.DeleteActionChain(db, id)
 	if err != nil {
 		log.Printf("Error deleting action chain: %v", err)
@@ -151,7 +151,7 @@ func handleDeleteActionChain(db *sql.DB, w http.ResponseWriter, id string) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func handleListActionChains(db *sql.DB, w http.ResponseWriter) {
+func handleListActionChains(db *gorm.DB, w http.ResponseWriter) {
 	chains, err := database.ListActionChains(db)
 	if err != nil {
 		log.Printf("Error listing action chains: %v", err)
@@ -162,7 +162,7 @@ func handleListActionChains(db *sql.DB, w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(chains)
 }
 
-func handleActivateActionChain(db *sql.DB, w http.ResponseWriter, id string) {
+func handleActivateActionChain(db *gorm.DB, w http.ResponseWriter, id string) {
 	err := database.ActivateActionChain(db, id)
 	if err != nil {
 		log.Printf("Error activating action chain: %v", err)
@@ -174,7 +174,7 @@ func handleActivateActionChain(db *sql.DB, w http.ResponseWriter, id string) {
 	w.Write([]byte("Action chain activated successfully"))
 }
 
-func handleDeactivateActionChain(db *sql.DB, w http.ResponseWriter, id string) {
+func handleDeactivateActionChain(db *gorm.DB, w http.ResponseWriter, id string) {
 	err := database.DeactivateActionChain(db, id)
 	if err != nil {
 		log.Printf("Error deactivating action chain: %v", err)
@@ -187,13 +187,14 @@ func handleDeactivateActionChain(db *sql.DB, w http.ResponseWriter, id string) {
 }
 
 // Action Handlers
-func handleCreateAction(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func handleCreateAction(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	action, err := models.UnmarshalAction(body)
+	var action models.Action
+	err = json.Unmarshal(body, &action)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -211,7 +212,7 @@ func handleCreateAction(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(action)
 }
 
-func handleGetAction(db *sql.DB, w http.ResponseWriter, id string) {
+func handleGetAction(db *gorm.DB, w http.ResponseWriter, id string) {
 	action, err := database.GetAction(db, id)
 	if err != nil {
 		log.Printf("Error getting action: %v", err)
@@ -222,19 +223,20 @@ func handleGetAction(db *sql.DB, w http.ResponseWriter, id string) {
 	json.NewEncoder(w).Encode(action)
 }
 
-func handleUpdateAction(db *sql.DB, w http.ResponseWriter, r *http.Request, id string) {
+func handleUpdateAction(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	action, err := models.UnmarshalAction(body)
+	var action models.Action
+	err = json.Unmarshal(body, &action)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = database.UpdateAction(db, action, id)
+	err = database.UpdateAction(db, action)
 	if err != nil {
 		log.Printf("Error updating action: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -244,7 +246,7 @@ func handleUpdateAction(db *sql.DB, w http.ResponseWriter, r *http.Request, id s
 	w.WriteHeader(http.StatusOK)
 }
 
-func handleDeleteAction(db *sql.DB, w http.ResponseWriter, id string) {
+func handleDeleteAction(db *gorm.DB, w http.ResponseWriter, id string) {
 	err := database.DeleteAction(db, id)
 	if err != nil {
 		log.Printf("Error deleting action: %v", err)
@@ -255,7 +257,7 @@ func handleDeleteAction(db *sql.DB, w http.ResponseWriter, id string) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func handleListActions(db *sql.DB, w http.ResponseWriter) {
+func handleListActions(db *gorm.DB, w http.ResponseWriter) {
 	actions, err := database.ListActions(db)
 	if err != nil {
 		log.Printf("Error listing actions: %v", err)
@@ -264,35 +266,6 @@ func handleListActions(db *sql.DB, w http.ResponseWriter) {
 	}
 
 	json.NewEncoder(w).Encode(actions)
-}
-
-// MonitorActiveTriggers continuously checks for active triggers and executes them
-func MonitorActiveTriggers(db *sql.DB) {
-	ticker := time.NewTicker(1 * time.Minute) // Adjust the interval as needed
-	defer ticker.Stop()
-
-	for range ticker.C { // Corrected loop
-		// Retrieve all active action chains
-		rows, err := db.Query("SELECT id FROM action_chains WHERE active = 1")
-		if err != nil {
-			log.Printf("Error retrieving active action chains: %v", err)
-			continue
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var id string
-			if err := rows.Scan(&id); err != nil {
-				log.Printf("Error scanning action chain ID: %v", err)
-				continue
-			}
-
-			// Execute the action chain
-			if err := database.ActivateActionChain(db, id); err != nil {
-				log.Printf("Error executing action chain %s: %v", id, err)
-			}
-		}
-	}
 }
 
 // New handler for adding secrets to .env file

@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	// No need to defer db.Close() with GORM
 
 	// Set up API routes
 	api.SetupRoutes(db)
