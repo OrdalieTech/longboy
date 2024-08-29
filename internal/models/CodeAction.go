@@ -8,27 +8,27 @@ import (
 	"github.com/dop251/goja"
 )
 
-type CodeAction struct {
-	BaseAction
+type CodeActionData struct {
 	Language   string `json:"language"`
 	SourceCode string `json:"source_code"`
 }
 
-func (c *CodeAction) GetID() string {
-	return c.ID
+func GetCodeActionData(a *Action) (*CodeActionData, error) {
+	data := &CodeActionData{}
+	if a.Metadata["language"] != nil {
+		data.Language = a.Metadata["language"].(string)
+	}
+	if a.Metadata["source_code"] != nil {
+		data.SourceCode = a.Metadata["source_code"].(string)
+	}
+	return data, nil
 }
 
-func (c *CodeAction) SetID(id string) {
-	c.ID = id
-	c.ResultID = id
-}
-
-func (c *CodeAction) GetDescription() string {
-	return c.Description
-}
-
-func (c *CodeAction) GetType() string {
-	return "code"
+func CodeActionDataToMetadata(data *CodeActionData) map[string]interface{} {
+	return map[string]interface{}{
+		"language":    data.Language,
+		"source_code": data.SourceCode,
+	}
 }
 
 /*
@@ -36,18 +36,25 @@ POC —
 Need refactoring to avoid using exec.Commands inside the Longboy container
 -> Maybe using a pakcage like Goja (github.com/dop251/goja)
 */
-func (c *CodeAction) Exec(ctx *Context) error {
+func (a *Action) ExecCode(ctx *Context) error {
+	c, err := GetCodeActionData(a)
+	if err != nil {
+		return err
+	}
+	sc := c.SourceCode
+	sc, err = a.ProcessBody(ctx, sc)
+	if err != nil {
+		return err
+	}
 	var output strings.Builder
-	var err error
-
 	switch c.Language {
 	case "python":
-		cmd := exec.Command("python", "-c", c.SourceCode)
+		cmd := exec.Command("python", "-c", sc)
 		var byteOutput []byte
 		byteOutput, err = cmd.CombinedOutput()
 		output.Write(byteOutput)
 	case "bash":
-		cmd := exec.Command("bash", "-c", c.SourceCode)
+		cmd := exec.Command("bash", "-c", sc)
 		var byteOutput []byte
 		byteOutput, err = cmd.CombinedOutput()
 		output.Write(byteOutput)
@@ -71,7 +78,7 @@ func (c *CodeAction) Exec(ctx *Context) error {
 			return fmt.Errorf("failed to set console object: %v", err)
 		}
 
-		_, err = vm.RunString(c.SourceCode)
+		_, err = vm.RunString(sc)
 		if err != nil {
 			return fmt.Errorf("JavaScript execution failed: %v", err)
 		}
@@ -83,17 +90,9 @@ func (c *CodeAction) Exec(ctx *Context) error {
 		return fmt.Errorf("execution failed: %s, output: %s", err, output.String())
 	}
 
-	if c.ResultID != "" {
-		ctx.Results[c.ResultID] = output.String()
+	if a.ResultID != "" {
+		ctx.Results[a.ResultID] = output.String()
 	}
 
 	return nil
-}
-
-func (c *CodeAction) GetResultID() string {
-	return c.ResultID
-}
-
-func (c *CodeAction) GetFollowingActionID() string {
-	return c.FollowingActionID
 }

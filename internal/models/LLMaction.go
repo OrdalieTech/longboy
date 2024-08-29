@@ -10,9 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"regexp"
-	"strconv"
-	"strings"
 	"time"
 
 	"longboy/internal/config"
@@ -56,16 +53,98 @@ type ChatCompletionRequest struct {
 	Models      []string      `json:"models"`
 	Messages    []ConvMessage `json:"messages"`
 	Stream      bool          `json:"stream"`
-	Temperature float32       `json:"temperature"`
+	Temperature float64       `json:"temperature"`
 	MaxTokens   int           `json:"max_tokens"`
 }
 
-type LLMAction struct {
-	BaseAction
+type LLMActionData struct {
 	LLMClient
 	ChatCompletionRequest
 	Provider       string `json:"provider"`
 	DeploymentName string `json:"deployment_name"`
+}
+
+func GetLLMActionData(a *Action) (*LLMActionData, error) {
+	data := &LLMActionData{}
+	if a.Metadata["apiKey"] != nil {
+		data.apiKey = a.Metadata["apiKey"].(string)
+	}
+	if a.Metadata["baseURL"] != nil {
+		data.baseURL = a.Metadata["baseURL"].(string)
+	}
+	if a.Metadata["httpClient"] != nil {
+		data.httpClient = a.Metadata["httpClient"].(*http.Client)
+	}
+	if a.Metadata["appName"] != nil {
+		data.appName = a.Metadata["appName"].(string)
+	}
+	if a.Metadata["appURL"] != nil {
+		data.appURL = a.Metadata["appURL"].(string)
+	}
+	if a.Metadata["models"] != nil {
+		models, ok := a.Metadata["models"].([]interface{})
+		if !ok {
+			return data, fmt.Errorf("invalid models format in metadata")
+		}
+		for _, model := range models {
+			if modelStr, ok := model.(string); ok {
+				data.Models = append(data.Models, modelStr)
+			}
+		}
+	}
+	if a.Metadata["messages"] != nil {
+		messages, ok := a.Metadata["messages"].([]interface{})
+		if !ok {
+			return data, fmt.Errorf("invalid messages format in metadata")
+		}
+		for _, msg := range messages {
+			if msgMap, ok := msg.(map[string]interface{}); ok {
+				role, _ := msgMap["role"].(string)
+				content, _ := msgMap["content"].(string)
+				data.Messages = append(data.Messages, ConvMessage{Role: role, Content: content})
+			}
+		}
+	}
+	if a.Metadata["stream"] != nil {
+		data.Stream = a.Metadata["stream"].(bool)
+	}
+	if a.Metadata["temperature"] != nil {
+		data.Temperature = a.Metadata["temperature"].(float64)
+	}
+	if a.Metadata["max_tokens"] != nil {
+		switch v := a.Metadata["max_tokens"].(type) {
+		case int:
+			data.MaxTokens = v
+		case float64:
+			data.MaxTokens = int(v)
+		default:
+			return data, fmt.Errorf("invalid max_tokens format in metadata")
+		}
+	}
+	if a.Metadata["provider"] != nil {
+		data.Provider = a.Metadata["provider"].(string)
+	}
+	if a.Metadata["deployment_name"] != nil {
+		data.DeploymentName = a.Metadata["deployment_name"].(string)
+	}
+	return data, nil
+}
+
+func LLMActionDataToMetadata(data *LLMActionData) map[string]interface{} {
+	return map[string]interface{}{
+		"apiKey":          data.apiKey,
+		"baseURL":         data.baseURL,
+		"httpClient":      data.httpClient,
+		"appName":         data.appName,
+		"appURL":          data.appURL,
+		"models":          data.Models,
+		"messages":        data.Messages,
+		"stream":          data.Stream,
+		"temperature":     data.Temperature,
+		"max_tokens":      data.MaxTokens,
+		"provider":        data.Provider,
+		"deployment_name": data.DeploymentName,
+	}
 }
 
 func NewLLMClient(clientConfig ClientConfig) *LLMClient {
@@ -97,23 +176,6 @@ func NewLLMClient(clientConfig ClientConfig) *LLMClient {
 		appName:    clientConfig.AppName,
 		appURL:     clientConfig.AppURL,
 	}
-}
-
-func (l *LLMAction) GetID() string {
-	return l.ID
-}
-
-func (l *LLMAction) SetID(id string) {
-	l.ID = id
-	l.ResultID = id
-}
-
-func (l *LLMAction) GetDescription() string {
-	return l.Description
-}
-
-func (l *LLMAction) GetType() string {
-	return "llm"
 }
 
 func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionRequest) (<-chan string, <-chan error) {
@@ -258,7 +320,11 @@ func (c *LLMClient) handleNonStreamingResponse(body io.ReadCloser, responseChan 
 	}
 }
 
-func (l *LLMAction) Exec(ctx *Context) error {
+func (a *Action) ExecLLM(ctx *Context) error {
+	l, err := GetLLMActionData(a)
+	if err != nil {
+		return err
+	}
 	fmt.Printf("LLMAction: %+v\n", l)
 	l.LLMClient = *NewLLMClient(ClientConfig{
 		Provider:       l.Provider,
@@ -268,55 +334,10 @@ func (l *LLMAction) Exec(ctx *Context) error {
 
 	for i := range l.ChatCompletionRequest.Messages {
 		body := l.ChatCompletionRequest.Messages[i].Content
-		secretRe := regexp.MustCompile(`{{(.+?)}}`)
-		contextRe := regexp.MustCompile(`\[\[(.+?)\]\]`)
-
-		body = secretRe.ReplaceAllStringFunc(body, func(match string) string {
-			key := strings.Trim(match, "{}")
-			return config.GetConfig().GetSecret(key)
-		})
-
-		body = contextRe.ReplaceAllStringFunc(body, func(match string) string {
-			expr := strings.Trim(match, "[]")
-			placeholder, ok := l.Placeholders[expr]
-			if !ok {
-				return match // Return original if not found in placeholders
-			}
-			value := ctx.Results[placeholder.Name]
-			current := placeholder.Next
-			for current != nil && current.Name != "" {
-				if mapValue, ok := value.(map[string]interface{}); ok {
-					value, ok = mapValue[current.Name]
-					if !ok {
-						return match
-					}
-				} else if sliceValue, ok := value.([]interface{}); ok {
-					index, err := strconv.Atoi(current.Name)
-					if err != nil || index < 0 || index >= len(sliceValue) {
-						return match
-					}
-					value = sliceValue[index]
-				} else {
-					return match
-				}
-				current = current.Next
-			}
-
-			// Convert the final value to string
-			switch v := value.(type) {
-			case string:
-				return v
-			case []byte:
-				return string(v)
-			default:
-				jsonBytes, err := json.Marshal(v)
-				if err != nil {
-					log.Printf("Error marshaling context value for expression %s: %v", expr, err)
-					return match
-				}
-				return string(jsonBytes)
-			}
-		})
+		body, err = a.ProcessBody(ctx, body)
+		if err != nil {
+			return err
+		}
 		l.ChatCompletionRequest.Messages[i].Content = body
 		fmt.Printf("Message %d: %s\n", i, l.ChatCompletionRequest.Messages[i].Content)
 	}
@@ -325,18 +346,10 @@ func (l *LLMAction) Exec(ctx *Context) error {
 
 	select {
 	case responseTxt := <-respChan:
-		ctx.Results[l.ResultID] = responseTxt
+		ctx.Results[a.ResultID] = responseTxt
 		return nil
 	case err := <-errChan:
 		log.Printf("Error in Completion: %v", err)
 		return err
 	}
-}
-
-func (l *LLMAction) GetResultID() string {
-	return l.ResultID
-}
-
-func (l *LLMAction) GetFollowingActionID() string {
-	return l.FollowingActionID
 }

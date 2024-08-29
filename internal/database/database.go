@@ -167,15 +167,15 @@ func DeactivateActionChain(db *sql.DB, id string) error {
 
 // CreateAction creates a new action in the database
 func CreateAction(db *sql.DB, action models.Action) error {
-	actionID := GetNextActionID()
-	action.SetID(fmt.Sprintf("action-%d", actionID)) // Assuming SetID method exists
+	// actionID := GetNextActionID()
+	// action.ID = fmt.Sprintf("action-%d", actionID)
 
 	data, err := models.MarshalAction(action)
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Exec("INSERT INTO actions (id, data) VALUES (?, ?)", action.GetID(), data)
+	_, err = db.Exec("INSERT INTO actions (id, data) VALUES (?, ?)", action.ID, data)
 	return err
 }
 
@@ -184,7 +184,7 @@ func GetAction(db *sql.DB, id string) (models.Action, error) {
 	var data []byte
 	err := db.QueryRow("SELECT data FROM actions WHERE id = ?", id).Scan(&data)
 	if err != nil {
-		return nil, err
+		return models.Action{}, err
 	}
 
 	var action models.Action

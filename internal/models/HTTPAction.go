@@ -12,90 +12,67 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
-type HTTPAction struct {
-	BaseAction
+type HTTPActionData struct {
 	URL     string            `json:"url"`
 	Method  string            `json:"method"`
 	Headers map[string]string `json:"headers"`
 	Body    string            `json:"body"`
 }
 
-func (h *HTTPAction) GetID() string {
-	return h.ID
+func GetHTTPActionData(a *Action) (*HTTPActionData, error) {
+	data := &HTTPActionData{}
+	if a.Metadata["url"] != nil {
+		data.URL = a.Metadata["url"].(string)
+	}
+	if a.Metadata["method"] != nil {
+		data.Method = a.Metadata["method"].(string)
+	}
+	if a.Metadata["headers"] != nil {
+		// Convert map[string]interface{} to map[string]string
+		headersInterface, ok := a.Metadata["headers"].(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("headers is not a map[string]interface{}")
+		}
+		data.Headers = make(map[string]string)
+		for k, v := range headersInterface {
+			strValue, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("header value for key %s is not a string", k)
+			}
+			data.Headers[k] = strValue
+		}
+	}
+	if a.Metadata["body"] != nil {
+		data.Body = a.Metadata["body"].(string)
+	}
+	return data, nil
 }
 
-func (h *HTTPAction) SetID(id string) {
-	h.ID = id
-	h.ResultID = id
+func HTTPActionDataToMetadata(data *HTTPActionData) map[string]interface{} {
+	return map[string]interface{}{
+		"url":     data.URL,
+		"method":  data.Method,
+		"headers": data.Headers,
+		"body":    data.Body,
+	}
 }
 
-func (h *HTTPAction) GetDescription() string {
-	return h.Description
-}
-
-func (h *HTTPAction) GetType() string {
-	return "http"
-}
-
-func (h *HTTPAction) Exec(ctx *Context) error {
+func (a *Action) ExecHTTP(ctx *Context) error {
 	client := &http.Client{}
 
+	h, err := GetHTTPActionData(a)
+	if err != nil {
+		return err
+	}
+
 	// Replace placeholders in the body with actual secret values and context values
-	body := h.Body
-	secretRe := regexp.MustCompile(`{{(.+?)}}`)
-	contextRe := regexp.MustCompile(`\[\[(.+?)\]\]`)
-
-	body = secretRe.ReplaceAllStringFunc(body, func(match string) string {
-		key := strings.Trim(match, "{}")
-		return config.GetConfig().GetSecret(key)
-	})
-
-	body = contextRe.ReplaceAllStringFunc(body, func(match string) string {
-		expr := strings.Trim(match, "[]")
-		placeholder, ok := h.Placeholders[expr]
-		if !ok {
-			return match // Return original if not found in placeholders
-		}
-		value := ctx.Results[placeholder.Name]
-		current := placeholder.Next
-		for current != nil && current.Name != "" {
-			if mapValue, ok := value.(map[string]interface{}); ok {
-				value, ok = mapValue[current.Name]
-				if !ok {
-					return match
-				}
-			} else if sliceValue, ok := value.([]interface{}); ok {
-				index, err := strconv.Atoi(current.Name)
-				if err != nil || index < 0 || index >= len(sliceValue) {
-					return match
-				}
-				value = sliceValue[index]
-			} else {
-				return match
-			}
-			current = current.Next
-		}
-
-		// Convert the final value to string
-		switch v := value.(type) {
-		case string:
-			return v
-		case []byte:
-			return string(v)
-		default:
-			jsonBytes, err := json.Marshal(v)
-			if err != nil {
-				log.Printf("Error marshaling context value for expression %s: %v", expr, err)
-				return match
-			}
-			return string(jsonBytes)
-		}
-	})
-	fmt.Printf("Body before processing: %s\n", body)
+	body, err := a.ProcessBody(ctx, h.Body)
+	if err != nil {
+		return err
+	}
 
 	var bodyReader io.Reader
 	if h.Headers["Content-Type"] == "application/json" {
@@ -118,12 +95,12 @@ func (h *HTTPAction) Exec(ctx *Context) error {
 		bodyReader = bytes.NewBufferString(body)
 	}
 
-	fmt.Printf("Body after processing: %s\n", bodyReader)
-
 	req, err := http.NewRequest(h.Method, h.URL, bodyReader)
 	if err != nil {
 		return err
 	}
+
+	secretRe := regexp.MustCompile(`{{(.+?)}}`)
 
 	// Replace placeholders in headers with actual secret values
 	for key, value := range h.Headers {
@@ -145,35 +122,27 @@ func (h *HTTPAction) Exec(ctx *Context) error {
 		return err
 	}
 
-	if h.ResultID != "" {
+	if a.ResultID != "" {
 		// Parse the JSON response
 		var jsonData interface{}
 		err = json.Unmarshal(respBody, &jsonData)
 		if err != nil {
 			log.Printf("Error parsing JSON response: %v", err)
 			// Store the raw response if JSON parsing fails
-			ctx.Results[h.ResultID] = string(respBody)
+			ctx.Results[a.ResultID] = string(respBody)
 		} else {
 			// Store the parsed JSON in ctx.Results
-			ctx.Results[h.ResultID] = jsonData
+			ctx.Results[a.ResultID] = jsonData
 		}
 
-		fmt.Printf("Stored in ctx.Results[%s]: %+v\n", h.ResultID, ctx.Results[h.ResultID])
+		fmt.Printf("Stored in ctx.Results[%s]: %+v\n", a.ResultID, ctx.Results[a.ResultID])
 	}
 
 	return nil
 }
 
-func (h *HTTPAction) GetResultID() string {
-	return h.ResultID
-}
-
-func (h *HTTPAction) GetFollowingActionID() string {
-	return h.FollowingActionID
-}
-
-func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
-	list := []HTTPAction{}
+func OpenAPIToHTTPActions(filename string) ([]Action, error) {
+	list := []Action{}
 
 	// Open the JSON file
 	file, err := os.Open(filename)
@@ -310,18 +279,18 @@ func OpenAPIToHTTPActions(filename string) ([]HTTPAction, error) {
 
 			id := fmt.Sprintf("%d", utils.GetNextActionID())
 
-			list = append(list, HTTPAction{
-				BaseAction: BaseAction{
-					ID:                id,
-					Type:              "http",
-					Description:       description,
-					ResultID:          id,
-					FollowingActionID: "",
+			list = append(list, Action{
+				ID:                id,
+				Type:              "http",
+				Description:       description,
+				ResultID:          id,
+				FollowingActionID: "",
+				Metadata: map[string]interface{}{
+					"URL":     fullURL,
+					"Method":  strings.ToUpper(method),
+					"Headers": headers,
+					"Body":    requestBody,
 				},
-				URL:     fullURL,
-				Method:  strings.ToUpper(method),
-				Headers: headers,
-				Body:    requestBody,
 			})
 		}
 	}
@@ -369,8 +338,8 @@ func extractProperties(schema map[string]interface{}) map[string]interface{} {
 	return properties
 }
 
-func LoadAPITemplates(apiDirectory string) (map[string][]HTTPAction, error) {
-	templates := make(map[string][]HTTPAction)
+func LoadAPITemplates(apiDirectory string) (map[string][]Action, error) {
+	templates := make(map[string][]Action)
 
 	files, err := os.ReadDir(apiDirectory)
 	if err != nil {
@@ -394,7 +363,7 @@ func LoadAPITemplates(apiDirectory string) (map[string][]HTTPAction, error) {
 	return templates, nil
 }
 
-func SaveAPITemplates(templates map[string][]HTTPAction, templateDir string) error {
+func SaveAPITemplates(templates map[string][]Action, templateDir string) error {
 	if err := os.MkdirAll(templateDir, 0755); err != nil {
 		return fmt.Errorf("failed to create template directory: %v", err)
 	}

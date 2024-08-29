@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"longboy/internal/config"
 	"net/http"
 	"net/url"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -73,7 +75,7 @@ func getActionByID(db *sql.DB, id string) (Action, error) {
 	var data []byte
 	err := db.QueryRow("SELECT data FROM actions WHERE id = ?", id).Scan(&data)
 	if err != nil {
-		return nil, err
+		return Action{}, err
 	}
 
 	action, err := UnmarshalAction(data)
@@ -134,7 +136,7 @@ func (t *Trigger) Exec(ctx *Context, db *sql.DB) error {
 					log.Printf("failed to execute next action: %v", err)
 					break
 				}
-				nextActionID = nextAction.GetFollowingActionID()
+				nextActionID = nextAction.FollowingActionID
 			}
 		}
 	})
@@ -163,16 +165,17 @@ type Placeholder struct {
 	Next *Placeholder `json:"next,omitempty"`
 }
 
-type BaseAction struct {
+type Action struct {
 	ID                string                  `json:"id"`
 	Type              string                  `json:"type"`
 	Description       string                  `json:"description"`
 	ResultID          string                  `json:"result_id,omitempty"`
 	FollowingActionID string                  `json:"following_action_id,omitempty"`
 	Placeholders      map[string]*Placeholder `json:"placeholders"`
+	Metadata          map[string]interface{}  `json:"metadata"`
 }
 
-type Action interface {
+type ActionOld interface {
 	GetID() string
 	SetID(id string)
 	GetType() string
@@ -183,15 +186,12 @@ type Action interface {
 }
 
 func UnmarshalAction(data []byte) (Action, error) {
-	var baseAction struct {
-		Type string `json:"type"`
-	}
-	if err := json.Unmarshal(data, &baseAction); err != nil {
-		return nil, err
+	var action Action
+	if err := json.Unmarshal(data, &action); err != nil {
+		return Action{}, err
 	}
 
-	var action Action
-	switch baseAction.Type {
+	/*switch baseAction.Type {
 	case "http":
 		var httpAction HTTPAction
 		if err := json.Unmarshal(data, &httpAction); err != nil {
@@ -210,40 +210,33 @@ func UnmarshalAction(data []byte) (Action, error) {
 			return nil, err
 		}
 		action = &codeAction
-	case "branch":
-		var branchAction BranchAction
-		if err := json.Unmarshal(data, &branchAction); err != nil {
+	case "if_then":
+		var ifThenAction IfThenAction
+		if err := json.Unmarshal(data, &ifThenAction); err != nil {
 			return nil, err
 		}
-		action = &branchAction
+		action = &ifThenAction
 	case "loop":
 		var loopAction LoopAction
 		if err := json.Unmarshal(data, &loopAction); err != nil {
 			return nil, err
 		}
 		action = &loopAction
+	case "branch":
+		var branchAction BranchAction
+		if err := json.Unmarshal(data, &branchAction); err != nil {
+			return nil, err
+		}
+		action = &branchAction
 	default:
 		return nil, fmt.Errorf("unknown action type: %s", baseAction.Type)
-	}
+	}*/
 
 	return action, nil
 }
 
 func MarshalAction(action Action) ([]byte, error) {
-	switch action.GetType() {
-	case "http":
-		return json.Marshal(action)
-	case "llm":
-		return json.Marshal(action)
-	case "code":
-		return json.Marshal(action)
-	case "branch":
-		return json.Marshal(action)
-	case "loop":
-		return json.Marshal(action)
-	default:
-		return nil, fmt.Errorf("unknown action type: %s", action.GetType())
-	}
+	return json.Marshal(action)
 }
 
 func evaluateCondition(condition string, ctx *Context) (bool, error) {
@@ -348,4 +341,78 @@ func compareValues(left, right interface{}, operator string) (bool, error) {
 		return false, fmt.Errorf("unsupported type for comparison: %T", left)
 	}
 	return false, fmt.Errorf("invalid operator for type: %s", operator)
+}
+
+func (a *Action) Exec(ctx *Context) error {
+	switch a.Type {
+	case "http":
+		return a.ExecHTTP(ctx)
+	case "llm":
+		return a.ExecLLM(ctx)
+	case "code":
+		return a.ExecCode(ctx)
+	case "if_then":
+		return a.ExecIfThen(ctx)
+	case "loop":
+		return a.ExecLoop(ctx)
+	case "branch":
+		return a.ExecBranch(ctx)
+	default:
+		return fmt.Errorf("unknown action type: %s", a.Type)
+	}
+}
+
+func (a *Action) ProcessBody(ctx *Context, body string) (string, error) {
+	secretRe := regexp.MustCompile(`{{(.+?)}}`)
+	contextRe := regexp.MustCompile(`\[\[(.+?)\]\]`)
+
+	body = secretRe.ReplaceAllStringFunc(body, func(match string) string {
+		key := strings.Trim(match, "{}")
+		return config.GetConfig().GetSecret(key)
+	})
+
+	body = contextRe.ReplaceAllStringFunc(body, func(match string) string {
+		expr := strings.Trim(match, "[]")
+		placeholder, ok := a.Placeholders[expr]
+		if !ok {
+			return match // Return original if not found in placeholders
+		}
+		value := ctx.Results[placeholder.Name]
+		current := placeholder.Next
+		for current != nil && current.Name != "" {
+			if mapValue, ok := value.(map[string]interface{}); ok {
+				value, ok = mapValue[current.Name]
+				if !ok {
+					return match
+				}
+			} else if sliceValue, ok := value.([]interface{}); ok {
+				index, err := strconv.Atoi(current.Name)
+				if err != nil || index < 0 || index >= len(sliceValue) {
+					return match
+				}
+				value = sliceValue[index]
+			} else {
+				return match
+			}
+			current = current.Next
+		}
+
+		// Convert the final value to string
+		switch v := value.(type) {
+		case string:
+			return v
+		case []byte:
+			return string(v)
+		default:
+			jsonBytes, err := json.Marshal(v)
+			if err != nil {
+				log.Printf("Error marshaling context value for expression %s: %v", expr, err)
+				return match
+			}
+			return string(jsonBytes)
+		}
+	})
+	fmt.Printf("Body before processing: %s\n", body)
+
+	return body, nil
 }

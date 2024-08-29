@@ -1,51 +1,62 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
-type BranchAction struct {
-	BaseAction
-	Condition     string `json:"condition"`
-	TrueActionID  string `json:"true_action_id"`
-	FalseActionID string `json:"false_action_id"`
+type BranchActionData struct {
+	Rank      string   `json:"rank"`
+	ActionsID []string `json:"actions"`
 }
 
-func (b *BranchAction) GetID() string {
-	return b.ID
+func GetBranchActionData(a *Action) (*BranchActionData, error) {
+	data := &BranchActionData{}
+	if a.Metadata["rank"] != nil {
+		data.Rank = a.Metadata["rank"].(string)
+	}
+	if a.Metadata["actions_id"] != nil {
+		// Convert map[string]interface{} to []string
+		actionsIDInterface, ok := a.Metadata["actions_id"].([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("actions_id is not a []interface{}")
+		}
+		data.ActionsID = make([]string, len(actionsIDInterface))
+		for i, v := range actionsIDInterface {
+			strValue, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("action ID at index %d is not a string", i)
+			}
+			data.ActionsID[i] = strValue
+		}
+	}
+	return data, nil
 }
 
-func (b *BranchAction) SetID(id string) {
-	b.ID = id
+func BranchActionDataToMetadata(data *BranchActionData) map[string]interface{} {
+	return map[string]interface{}{
+		"rank":       data.Rank,
+		"actions_id": data.ActionsID,
+	}
 }
 
-func (b *BranchAction) GetDescription() string {
-	return b.Description
-}
-
-func (b *BranchAction) GetType() string {
-	return "branch"
-}
-
-func (b *BranchAction) Exec(ctx *Context) error {
-	// Evaluate the condition
-	result, err := evaluateCondition(b.Condition, ctx)
+func (a *Action) ExecBranch(ctx *Context) error {
+	b, err := GetBranchActionData(a)
 	if err != nil {
-		return fmt.Errorf("error evaluating condition: %v", err)
+		return err
+	}
+	// Replace placeholders in the body with actual secret values and context values
+	body := b.Rank
+	body, err = a.ProcessBody(ctx, body)
+	if err != nil {
+		return err
 	}
 
-	// Set the FollowingActionID based on the condition result
-	if result {
-		b.FollowingActionID = b.TrueActionID
-	} else {
-		b.FollowingActionID = b.FalseActionID
+	rank, err := strconv.Atoi(body)
+	if err != nil {
+		return fmt.Errorf("error converting rank to int: %v", err)
 	}
+	a.FollowingActionID = b.ActionsID[rank]
 
 	return nil
-}
-
-func (b *BranchAction) GetResultID() string {
-	return ""
-}
-
-func (b *BranchAction) GetFollowingActionID() string {
-	return b.FollowingActionID
 }

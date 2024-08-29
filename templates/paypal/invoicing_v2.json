@@ -2,15 +2,17 @@
   {
     "id": "46",
     "type": "http",
-    "description": "Lists invoices. To filter the invoices that appear in the response, you can specify one or more optional query parameters.",
+    "description": "Records a refund for the invoice. If all payments are refunded, the invoice is marked as `REFUNDED`. Otherwise, the invoice is marked as `PARTIALLY REFUNDED`.",
     "result_id": "46",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "{\n  \"amount\": \"\",\n  \"method\": \"\",\n  \"refund_date\": \"\",\n  \"refund_id\": \"\",\n  \"type\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/refunds"
+    }
   },
   {
     "id": "47",
@@ -18,245 +20,283 @@
     "description": "Creates a draft invoice. To move the invoice from a draft to payable state, you must \u003ca href=\"#invoices_send\"\u003esend the invoice\u003c/a\u003e.\u003cbr/\u003e\u003cbr/\u003eIn the JSON request body, include invoice details including merchant information. The \u003ccode\u003einvoice\u003c/code\u003e object must include an \u003ccode\u003eitems\u003c/code\u003e array.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e The merchant that you specify in an invoice must have a PayPal account in good standing.\u003c/blockquote\u003e.",
     "result_id": "47",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"additional_recipients\": \"\",\n  \"amount\": \"\",\n  \"configuration\": \"\",\n  \"detail\": \"\",\n  \"due_amount\": \"\",\n  \"gratuity\": \"\",\n  \"id\": \"\",\n  \"invoicer\": \"\",\n  \"items\": \"\",\n  \"links\": \"\",\n  \"parent_id\": \"\",\n  \"payments\": \"\",\n  \"primary_recipients\": \"\",\n  \"refunds\": \"\",\n  \"status\": \"\"\n}"
+    "metadata": {
+      "Body": "{\n  \"additional_recipients\": \"\",\n  \"amount\": \"\",\n  \"configuration\": \"\",\n  \"detail\": \"\",\n  \"due_amount\": \"\",\n  \"gratuity\": \"\",\n  \"id\": \"\",\n  \"invoicer\": \"\",\n  \"items\": \"\",\n  \"links\": \"\",\n  \"parent_id\": \"\",\n  \"payments\": \"\",\n  \"primary_recipients\": \"\",\n  \"refunds\": \"\",\n  \"status\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices"
+    }
   },
   {
     "id": "48",
     "type": "http",
-    "description": "Deletes an external refund, by invoice ID and transaction ID.",
+    "description": "Lists invoices. To filter the invoices that appear in the response, you can specify one or more optional query parameters.",
     "result_id": "48",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/refunds/{transaction_id}",
-    "method": "DELETE",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "GET",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices"
+    }
   },
   {
     "id": "49",
     "type": "http",
-    "description": "Generates a QR code for an invoice, by ID. The QR code is a PNG image in \u003ca href=\"https://www.base64encode.org/\"\u003eBase64-encoded\u003c/a\u003e format that corresponds to the invoice ID. You can generate a QR code for an invoice and add it to a paper or PDF invoice. When customers use their mobile devices to scan the QR code, they are redirected to the PayPal mobile payment flow where they can view the invoice and pay online with PayPal or a credit card. Before you get a QR code, you must \u003ca href=\"#invoices_create\"\u003ecreate an invoice\u003c/a\u003e and \u003ca href=\"#invoices_send\"\u003esend an invoice\u003c/a\u003e to move the invoice from a draft to payable state. Do not include an email address if you do not want the invoice emailed.",
+    "description": "Records a payment for the invoice. If no payment is due, the invoice is marked as `PAID`. Otherwise, the invoice is marked as `PARTIALLY PAID`.",
     "result_id": "49",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/generate-qr-code",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"action\": \"\",\n  \"height\": \"\",\n  \"width\": \"\"\n}"
+    "metadata": {
+      "Body": "{\n  \"amount\": \"\",\n  \"method\": \"\",\n  \"note\": \"\",\n  \"payment_date\": \"\",\n  \"payment_id\": \"\",\n  \"shipping_info\": \"\",\n  \"type\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/payments"
+    }
   },
   {
     "id": "50",
     "type": "http",
-    "description": "Searches for and lists invoices that match search criteria. If you pass multiple criteria, the response lists invoices that match all criteria.",
+    "description": "Deletes an external refund, by invoice ID and transaction ID.",
     "result_id": "50",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/search-invoices",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"archived\": \"\",\n  \"creation_date_range\": \"\",\n  \"currency_code\": \"\",\n  \"due_date_range\": \"\",\n  \"fields\": \"\",\n  \"invoice_date_range\": \"\",\n  \"invoice_number\": \"\",\n  \"memo\": \"\",\n  \"payment_date_range\": \"\",\n  \"recipient_business_name\": \"\",\n  \"recipient_email\": \"\",\n  \"recipient_first_name\": \"\",\n  \"recipient_last_name\": \"\",\n  \"reference\": \"\",\n  \"status\": \"\",\n  \"total_amount_range\": \"\"\n}"
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "DELETE",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/refunds/{transaction_id}"
+    }
   },
   {
     "id": "51",
     "type": "http",
-    "description": "Sends or schedules an invoice, by ID, to be sent to a customer. The action depends on the invoice issue date:\u003cul\u003e\u003cli\u003eIf the invoice issue date is current or in the past, sends the invoice immediately.\u003c/li\u003e\u003cli\u003eIf the invoice issue date is in the future, schedules the invoice to be sent on that date.\u003c/li\u003e\u003c/ul\u003eTo suppress the merchant's email notification, set the `send_to_invoicer` body parameter to `false`. To send the invoice through a share link and not through PayPal, set the \u003ccode\u003esend_to_recipient\u003c/code\u003e parameter to \u003ccode\u003efalse\u003c/code\u003e in the \u003ccode\u003enotification\u003c/code\u003e object. The \u003ccode\u003esend_to_recipient\u003c/code\u003e parameter does not apply to a future issue date because the invoice is scheduled to be sent through PayPal on that date.\u003cblockquote\u003e\u003cstrong\u003eNotes:\u003c/strong\u003e\u003cul\u003e\u003cli\u003eAfter you send an invoice, resending it has no effect.\u003c/li\u003e\u003cli\u003eTo send a notification for updates, \u003ca href=\"#invoices_update\"\u003eupdate the invoice\u003c/a\u003e and set the \u003ccode\u003esend_to_recipient\u003c/code\u003e body parameter to \u003ccode\u003etrue\u003c/code\u003e.\u003c/li\u003e\u003c/ul\u003e\u003c/blockquote\u003e",
+    "description": "Shows details for an invoice, by ID.",
     "result_id": "51",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/send",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"additional_recipients\": \"\",\n  \"note\": \"\",\n  \"send_to_invoicer\": \"\",\n  \"send_to_recipient\": \"\",\n  \"subject\": \"\"\n}"
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "GET",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}"
+    }
   },
   {
     "id": "52",
     "type": "http",
-    "description": "Cancels a sent invoice, by ID, and, optionally, sends a notification about the cancellation to the payer, merchant, and CC: emails.",
+    "description": "Fully updates an invoice, by ID. In the JSON request body, include a complete `invoice` object. This call does not support partial updates.",
     "result_id": "52",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/cancel",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"additional_recipients\": \"\",\n  \"note\": \"\",\n  \"send_to_invoicer\": \"\",\n  \"send_to_recipient\": \"\",\n  \"subject\": \"\"\n}"
+    "metadata": {
+      "Body": "{\n  \"additional_recipients\": \"\",\n  \"amount\": \"\",\n  \"configuration\": \"\",\n  \"detail\": \"\",\n  \"due_amount\": \"\",\n  \"gratuity\": \"\",\n  \"id\": \"\",\n  \"invoicer\": \"\",\n  \"items\": \"\",\n  \"links\": \"\",\n  \"parent_id\": \"\",\n  \"payments\": \"\",\n  \"primary_recipients\": \"\",\n  \"refunds\": \"\",\n  \"status\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "PUT",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}"
+    }
   },
   {
     "id": "53",
     "type": "http",
-    "description": "Lists merchant-created templates with associated details. The associated details include the emails, addresses, and phone numbers from the user's PayPal profile.\u003cbr/\u003eThe user can select which values to show in the business information section of their template.",
+    "description": "Deletes a draft or scheduled invoice, by ID. Deletes invoices in the draft or scheduled state only. For invoices that have already been sent, you can \u003ca href=\"/docs/api/invoicing/v2/#invoices_cancel\"\u003ecancel the invoice\u003c/a\u003e. After you delete a draft or scheduled invoice, you can no longer use it or show its details. However, you can reuse its invoice number.",
     "result_id": "53",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/templates",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "DELETE",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}"
+    }
   },
   {
     "id": "54",
     "type": "http",
-    "description": "Creates an invoice template. You can use details from this template to create an invoice. You can create up to 50 templates.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e Every merchant starts with three PayPal system templates that are optimized for the unit type billed. The template includes `Quantity`, `Hours`, and `Amount`.\u003c/blockquote\u003e",
+    "description": "Lists merchant-created templates with associated details. The associated details include the emails, addresses, and phone numbers from the user's PayPal profile.\u003cbr/\u003eThe user can select which values to show in the business information section of their template.",
     "result_id": "54",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/templates",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"default_template\": \"\",\n  \"id\": \"\",\n  \"links\": \"\",\n  \"name\": \"\",\n  \"settings\": \"\",\n  \"standard_template\": \"\",\n  \"template_info\": \"\",\n  \"unit_of_measure\": \"\"\n}"
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "GET",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/templates"
+    }
   },
   {
     "id": "55",
     "type": "http",
-    "description": "Shows details for a template, by ID.",
+    "description": "Creates an invoice template. You can use details from this template to create an invoice. You can create up to 50 templates.\u003cblockquote\u003e\u003cstrong\u003eNote:\u003c/strong\u003e Every merchant starts with three PayPal system templates that are optimized for the unit type billed. The template includes `Quantity`, `Hours`, and `Amount`.\u003c/blockquote\u003e",
     "result_id": "55",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/templates/{template_id}",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "{\n  \"default_template\": \"\",\n  \"id\": \"\",\n  \"links\": \"\",\n  \"name\": \"\",\n  \"settings\": \"\",\n  \"standard_template\": \"\",\n  \"template_info\": \"\",\n  \"unit_of_measure\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/templates"
+    }
   },
   {
     "id": "56",
     "type": "http",
-    "description": "Fully updates a template, by ID. In the JSON request body, include a complete `template` object. This call does not support partial updates.",
+    "description": "Sends or schedules an invoice, by ID, to be sent to a customer. The action depends on the invoice issue date:\u003cul\u003e\u003cli\u003eIf the invoice issue date is current or in the past, sends the invoice immediately.\u003c/li\u003e\u003cli\u003eIf the invoice issue date is in the future, schedules the invoice to be sent on that date.\u003c/li\u003e\u003c/ul\u003eTo suppress the merchant's email notification, set the `send_to_invoicer` body parameter to `false`. To send the invoice through a share link and not through PayPal, set the \u003ccode\u003esend_to_recipient\u003c/code\u003e parameter to \u003ccode\u003efalse\u003c/code\u003e in the \u003ccode\u003enotification\u003c/code\u003e object. The \u003ccode\u003esend_to_recipient\u003c/code\u003e parameter does not apply to a future issue date because the invoice is scheduled to be sent through PayPal on that date.\u003cblockquote\u003e\u003cstrong\u003eNotes:\u003c/strong\u003e\u003cul\u003e\u003cli\u003eAfter you send an invoice, resending it has no effect.\u003c/li\u003e\u003cli\u003eTo send a notification for updates, \u003ca href=\"#invoices_update\"\u003eupdate the invoice\u003c/a\u003e and set the \u003ccode\u003esend_to_recipient\u003c/code\u003e body parameter to \u003ccode\u003etrue\u003c/code\u003e.\u003c/li\u003e\u003c/ul\u003e\u003c/blockquote\u003e",
     "result_id": "56",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/templates/{template_id}",
-    "method": "PUT",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"default_template\": \"\",\n  \"id\": \"\",\n  \"links\": \"\",\n  \"name\": \"\",\n  \"settings\": \"\",\n  \"standard_template\": \"\",\n  \"template_info\": \"\",\n  \"unit_of_measure\": \"\"\n}"
+    "metadata": {
+      "Body": "{\n  \"additional_recipients\": \"\",\n  \"note\": \"\",\n  \"send_to_invoicer\": \"\",\n  \"send_to_recipient\": \"\",\n  \"subject\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/send"
+    }
   },
   {
     "id": "57",
     "type": "http",
-    "description": "Deletes a template, by ID.",
+    "description": "Cancels a sent invoice, by ID, and, optionally, sends a notification about the cancellation to the payer, merchant, and CC: emails.",
     "result_id": "57",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/templates/{template_id}",
-    "method": "DELETE",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "{\n  \"additional_recipients\": \"\",\n  \"note\": \"\",\n  \"send_to_invoicer\": \"\",\n  \"send_to_recipient\": \"\",\n  \"subject\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/cancel"
+    }
   },
   {
     "id": "58",
     "type": "http",
-    "description": "Sends a reminder to the payer about an invoice, by ID. In the JSON request body, include a `notification` object that defines the subject of the reminder and other details.",
+    "description": "Generates a QR code for an invoice, by ID. The QR code is a PNG image in \u003ca href=\"https://www.base64encode.org/\"\u003eBase64-encoded\u003c/a\u003e format that corresponds to the invoice ID. You can generate a QR code for an invoice and add it to a paper or PDF invoice. When customers use their mobile devices to scan the QR code, they are redirected to the PayPal mobile payment flow where they can view the invoice and pay online with PayPal or a credit card. Before you get a QR code, you must \u003ca href=\"#invoices_create\"\u003ecreate an invoice\u003c/a\u003e and \u003ca href=\"#invoices_send\"\u003esend an invoice\u003c/a\u003e to move the invoice from a draft to payable state. Do not include an email address if you do not want the invoice emailed.",
     "result_id": "58",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/remind",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"additional_recipients\": \"\",\n  \"note\": \"\",\n  \"send_to_invoicer\": \"\",\n  \"send_to_recipient\": \"\",\n  \"subject\": \"\"\n}"
+    "metadata": {
+      "Body": "{\n  \"action\": \"\",\n  \"height\": \"\",\n  \"width\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/generate-qr-code"
+    }
   },
   {
     "id": "59",
     "type": "http",
-    "description": "Records a payment for the invoice. If no payment is due, the invoice is marked as `PAID`. Otherwise, the invoice is marked as `PARTIALLY PAID`.",
+    "description": "Generates the next invoice number that is available to the merchant. The next invoice number uses the prefix and suffix from the last invoice number and increments the number by one. For example, the next invoice number after `INVOICE-1234` is `INVOICE-1235`.",
     "result_id": "59",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/payments",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"amount\": \"\",\n  \"method\": \"\",\n  \"note\": \"\",\n  \"payment_date\": \"\",\n  \"payment_id\": \"\",\n  \"shipping_info\": \"\",\n  \"type\": \"\"\n}"
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/generate-next-invoice-number"
+    }
   },
   {
     "id": "60",
     "type": "http",
-    "description": "Deletes an external payment, by invoice ID and transaction ID.",
+    "description": "Searches for and lists invoices that match search criteria. If you pass multiple criteria, the response lists invoices that match all criteria.",
     "result_id": "60",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/payments/{transaction_id}",
-    "method": "DELETE",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "{\n  \"archived\": \"\",\n  \"creation_date_range\": \"\",\n  \"currency_code\": \"\",\n  \"due_date_range\": \"\",\n  \"fields\": \"\",\n  \"invoice_date_range\": \"\",\n  \"invoice_number\": \"\",\n  \"memo\": \"\",\n  \"payment_date_range\": \"\",\n  \"recipient_business_name\": \"\",\n  \"recipient_email\": \"\",\n  \"recipient_first_name\": \"\",\n  \"recipient_last_name\": \"\",\n  \"reference\": \"\",\n  \"status\": \"\",\n  \"total_amount_range\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/search-invoices"
+    }
   },
   {
     "id": "61",
     "type": "http",
-    "description": "Records a refund for the invoice. If all payments are refunded, the invoice is marked as `REFUNDED`. Otherwise, the invoice is marked as `PARTIALLY REFUNDED`.",
+    "description": "Sends a reminder to the payer about an invoice, by ID. In the JSON request body, include a `notification` object that defines the subject of the reminder and other details.",
     "result_id": "61",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/refunds",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"amount\": \"\",\n  \"method\": \"\",\n  \"refund_date\": \"\",\n  \"refund_id\": \"\",\n  \"type\": \"\"\n}"
+    "metadata": {
+      "Body": "{\n  \"additional_recipients\": \"\",\n  \"note\": \"\",\n  \"send_to_invoicer\": \"\",\n  \"send_to_recipient\": \"\",\n  \"subject\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/remind"
+    }
   },
   {
     "id": "62",
     "type": "http",
-    "description": "Generates the next invoice number that is available to the merchant. The next invoice number uses the prefix and suffix from the last invoice number and increments the number by one. For example, the next invoice number after `INVOICE-1234` is `INVOICE-1235`.",
+    "description": "Deletes an external payment, by invoice ID and transaction ID.",
     "result_id": "62",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/generate-next-invoice-number",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "DELETE",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}/payments/{transaction_id}"
+    }
   },
   {
     "id": "63",
     "type": "http",
-    "description": "Shows details for an invoice, by ID.",
+    "description": "Fully updates a template, by ID. In the JSON request body, include a complete `template` object. This call does not support partial updates.",
     "result_id": "63",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "{\n  \"default_template\": \"\",\n  \"id\": \"\",\n  \"links\": \"\",\n  \"name\": \"\",\n  \"settings\": \"\",\n  \"standard_template\": \"\",\n  \"template_info\": \"\",\n  \"unit_of_measure\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "PUT",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/templates/{template_id}"
+    }
   },
   {
     "id": "64",
     "type": "http",
-    "description": "Fully updates an invoice, by ID. In the JSON request body, include a complete `invoice` object. This call does not support partial updates.",
+    "description": "Deletes a template, by ID.",
     "result_id": "64",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}",
-    "method": "PUT",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"additional_recipients\": \"\",\n  \"amount\": \"\",\n  \"configuration\": \"\",\n  \"detail\": \"\",\n  \"due_amount\": \"\",\n  \"gratuity\": \"\",\n  \"id\": \"\",\n  \"invoicer\": \"\",\n  \"items\": \"\",\n  \"links\": \"\",\n  \"parent_id\": \"\",\n  \"payments\": \"\",\n  \"primary_recipients\": \"\",\n  \"refunds\": \"\",\n  \"status\": \"\"\n}"
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "DELETE",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/templates/{template_id}"
+    }
   },
   {
     "id": "65",
     "type": "http",
-    "description": "Deletes a draft or scheduled invoice, by ID. Deletes invoices in the draft or scheduled state only. For invoices that have already been sent, you can \u003ca href=\"/docs/api/invoicing/v2/#invoices_cancel\"\u003ecancel the invoice\u003c/a\u003e. After you delete a draft or scheduled invoice, you can no longer use it or show its details. However, you can reuse its invoice number.",
+    "description": "Shows details for a template, by ID.",
     "result_id": "65",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/invoicing/invoices/{invoice_id}",
-    "method": "DELETE",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "GET",
+      "URL": "https://api-m.sandbox.paypal.com/v2/invoicing/templates/{template_id}"
+    }
   }
 ]

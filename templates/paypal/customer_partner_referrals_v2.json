@@ -5,12 +5,14 @@
     "description": "Creates a partner referral that is shared by the partner or API caller. The partner referral is used to onboard the seller, and contains the seller's personal, business, financial and operations.",
     "result_id": "44",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/customer/partner-referrals",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{}"
+    "metadata": {
+      "Body": "{}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v2/customer/partner-referrals"
+    }
   },
   {
     "id": "45",
@@ -18,11 +20,13 @@
     "description": "Shows details by ID for referral data that was shared by the partner or API caller.",
     "result_id": "45",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v2/customer/partner-referrals/{partner_referral_id}",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "GET",
+      "URL": "https://api-m.sandbox.paypal.com/v2/customer/partner-referrals/{partner_referral_id}"
+    }
   }
 ]

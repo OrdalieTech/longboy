@@ -5,12 +5,14 @@
     "description": "Creates a product.",
     "result_id": "17",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products",
-    "method": "POST",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{\n  \"category\": \"\",\n  \"description\": \"\",\n  \"home_url\": \"\",\n  \"id\": \"\",\n  \"image_url\": \"\",\n  \"name\": \"\",\n  \"type\": \"\"\n}"
+    "metadata": {
+      "Body": "{\n  \"category\": \"\",\n  \"description\": \"\",\n  \"home_url\": \"\",\n  \"id\": \"\",\n  \"image_url\": \"\",\n  \"name\": \"\",\n  \"type\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v1/catalogs/products"
+    }
   },
   {
     "id": "18",
@@ -18,12 +20,14 @@
     "description": "Lists products.",
     "result_id": "18",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "GET",
+      "URL": "https://api-m.sandbox.paypal.com/v1/catalogs/products"
+    }
   },
   {
     "id": "19",
@@ -31,12 +35,14 @@
     "description": "Shows details for a product, by ID.",
     "result_id": "19",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products/{product_id}",
-    "method": "GET",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": ""
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "GET",
+      "URL": "https://api-m.sandbox.paypal.com/v1/catalogs/products/{product_id}"
+    }
   },
   {
     "id": "20",
@@ -44,11 +50,13 @@
     "description": "Updates a product, by ID. You can patch these attributes and objects:\u003ctable\u003e\u003cthead\u003e\u003ctr\u003e\u003cth\u003eAttribute or object\u003c/th\u003e\u003cth\u003eOperations\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003edescription\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ecategory\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003eimage_url\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003e\u003ccode\u003ehome_url\u003c/code\u003e\u003c/td\u003e\u003ctd\u003eadd, replace, remove\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e",
     "result_id": "20",
     "placeholders": null,
-    "url": "https://api-m.sandbox.paypal.com/v1/catalogs/products/{product_id}",
-    "method": "PATCH",
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "body": "{}"
+    "metadata": {
+      "Body": "{}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "PATCH",
+      "URL": "https://api-m.sandbox.paypal.com/v1/catalogs/products/{product_id}"
+    }
   }
 ]
