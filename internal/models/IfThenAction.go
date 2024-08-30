@@ -35,8 +35,13 @@ func (a *Action) ExecIfThen(ctx *Context) error {
 	if err != nil {
 		return err
 	}
+	condition := i.Condition
+	condition, err = a.ProcessBody(ctx, condition)
+	if err != nil {
+		return err
+	}
 	// Evaluate the condition
-	result, err := evaluateCondition(i.Condition, ctx)
+	result, err := evaluateCondition(condition)
 	if err != nil {
 		return fmt.Errorf("error evaluating condition: %v", err)
 	}

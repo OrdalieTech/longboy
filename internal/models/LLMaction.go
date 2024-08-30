@@ -346,6 +346,7 @@ func (a *Action) ExecLLM(ctx *Context) error {
 
 	select {
 	case responseTxt := <-respChan:
+		fmt.Printf("Response: %s\n", responseTxt)
 		ctx.Results[a.ResultID] = responseTxt
 		return nil
 	case err := <-errChan:

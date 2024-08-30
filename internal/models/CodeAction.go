@@ -46,6 +46,7 @@ func (a *Action) ExecCode(ctx *Context) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Source Code: %s\n", sc)
 	var output strings.Builder
 	switch c.Language {
 	case "python":

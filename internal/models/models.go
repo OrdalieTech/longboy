@@ -172,17 +172,12 @@ type Action struct {
 	Metadata          map[string]interface{}  `json:"metadata" gorm:"serializer:json"`
 }
 
-type ActionOld interface {
-	GetID() string
-	SetID(id string)
-	GetType() string
-	GetDescription() string
-	Exec(ctx *Context) error
-	GetResultID() string
-	GetFollowingActionID() string
-}
+func evaluateCondition(condition string) (bool, error) {
+	// Clean up the condition string
+	condition = strings.TrimSpace(condition)
+	condition = strings.ReplaceAll(condition, "\n", " ")
+	condition = strings.Join(strings.Fields(condition), " ")
 
-func evaluateCondition(condition string, ctx *Context) (bool, error) {
 	// Split the condition into parts
 	parts := strings.Split(condition, " ")
 	if len(parts) != 3 {
@@ -194,9 +189,22 @@ func evaluateCondition(condition string, ctx *Context) (bool, error) {
 	rightOperand := parts[2]
 
 	// Get the left operand value from the context
-	leftValue, ok := ctx.Results[leftOperand]
-	if !ok {
-		return false, fmt.Errorf("left operand '%s' not found in context", leftOperand)
+	var leftValue interface{}
+	_, err := strconv.Atoi(leftOperand)
+	if err != nil {
+		_, err = strconv.ParseFloat(leftOperand, 64)
+		if err != nil {
+			_, err = strconv.ParseBool(leftOperand)
+			if err != nil {
+				leftValue = leftOperand
+			} else {
+				leftValue, _ = strconv.ParseBool(leftOperand)
+			}
+		} else {
+			leftValue, _ = strconv.ParseFloat(leftOperand, 64)
+		}
+	} else {
+		leftValue, _ = strconv.Atoi(leftOperand)
 	}
 
 	// Convert right operand to appropriate type
