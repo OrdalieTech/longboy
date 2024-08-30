@@ -40,7 +40,7 @@ func BranchActionDataToMetadata(data *BranchActionData) map[string]interface{} {
 	}
 }
 
-func (a *Action) ExecBranch(ctx *Context) error {
+func (a *Action) ExecBranch(ctx *ActionChainContext) error {
 	b, err := GetBranchActionData(a)
 	if err != nil {
 		return err

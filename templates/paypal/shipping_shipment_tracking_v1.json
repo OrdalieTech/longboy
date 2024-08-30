@@ -17,7 +17,7 @@
   {
     "id": "102",
     "type": "http",
-    "description": "Lists tracking information that meet search criteria. The tracking ID is required but the tracking number is optional.",
+    "description": "Adds tracking information for a PayPal transaction.",
     "result_id": "102",
     "placeholders": null,
     "metadata": {
@@ -25,14 +25,14 @@
       "Headers": {
         "Content-Type": "application/json"
       },
-      "Method": "GET",
+      "Method": "POST",
       "URL": "https://api-m.sandbox.paypal.com/v1/shipping/trackers"
     }
   },
   {
     "id": "103",
     "type": "http",
-    "description": "Adds tracking information for a PayPal transaction.",
+    "description": "Lists tracking information that meet search criteria. The tracking ID is required but the tracking number is optional.",
     "result_id": "103",
     "placeholders": null,
     "metadata": {
@@ -40,7 +40,7 @@
       "Headers": {
         "Content-Type": "application/json"
       },
-      "Method": "POST",
+      "Method": "GET",
       "URL": "https://api-m.sandbox.paypal.com/v1/shipping/trackers"
     }
   },

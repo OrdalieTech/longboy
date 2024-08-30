@@ -36,7 +36,7 @@ POC —
 Need refactoring to avoid using exec.Commands inside the Longboy container
 -> Maybe using a pakcage like Goja (github.com/dop251/goja)
 */
-func (a *Action) ExecCode(ctx *Context) error {
+func (a *Action) ExecCode(ctx *ActionChainContext) error {
 	c, err := GetCodeActionData(a)
 	if err != nil {
 		return err

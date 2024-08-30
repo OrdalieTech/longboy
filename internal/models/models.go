@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Context struct {
+type ActionChainContext struct {
 	Results map[string]interface{} `json:"results" gorm:"serializer:json"`
 }
 
@@ -54,11 +54,11 @@ func (d Description) Print() {
 }
 
 type ActionChain struct {
-	ID          string       `json:"id" gorm:"primaryKey"`
-	Trigger     *Trigger     `json:"trigger" gorm:"serializer:json"`
-	Context     *Context     `json:"context" gorm:"serializer:json"`
-	Description *Description `json:"description" gorm:"serializer:json"`
-	Active      bool         `json:"active" gorm:"default:false"`
+	ID          string              `json:"id" gorm:"primaryKey"`
+	Trigger     *Trigger            `json:"trigger" gorm:"serializer:json"`
+	Context     *ActionChainContext `json:"context" gorm:"serializer:json"`
+	Description *Description        `json:"description" gorm:"serializer:json"`
+	Active      bool                `json:"active" gorm:"default:false"`
 }
 
 type Trigger struct {
@@ -79,7 +79,7 @@ func getActionByID(db *gorm.DB, id string) (Action, error) {
 	return action, err
 }
 
-func (t *Trigger) Exec(ctx *Context, db *gorm.DB) error {
+func (t *Trigger) Exec(ctx *ActionChainContext, db *gorm.DB) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		parsedURL, _ := url.Parse(t.URL)
@@ -294,7 +294,7 @@ func compareValues(left, right interface{}, operator string) (bool, error) {
 	return false, fmt.Errorf("invalid operator for type: %s", operator)
 }
 
-func (a *Action) Exec(ctx *Context) error {
+func (a *Action) Exec(ctx *ActionChainContext) error {
 	switch a.Type {
 	case "http":
 		return a.ExecHTTP(ctx)
@@ -313,7 +313,7 @@ func (a *Action) Exec(ctx *Context) error {
 	}
 }
 
-func (a *Action) ProcessBody(ctx *Context, body string) (string, error) {
+func (a *Action) ProcessBody(ctx *ActionChainContext, body string) (string, error) {
 	secretRe := regexp.MustCompile(`{{(.+?)}}`)
 	contextRe := regexp.MustCompile(`\[\[(.+?)\]\]`)
 

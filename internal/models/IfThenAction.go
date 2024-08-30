@@ -30,7 +30,7 @@ func IfThenActionDataToMetadata(data *IfThenActionData) map[string]interface{} {
 	}
 }
 
-func (a *Action) ExecIfThen(ctx *Context) error {
+func (a *Action) ExecIfThen(ctx *ActionChainContext) error {
 	i, err := GetIfThenActionData(a)
 	if err != nil {
 		return err

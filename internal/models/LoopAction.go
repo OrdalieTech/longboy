@@ -76,7 +76,7 @@ func LoopActionDataToMetadata(data *LoopActionData) map[string]interface{} {
 	}
 }
 
-func (a *Action) ExecLoop(ctx *Context) error {
+func (a *Action) ExecLoop(ctx *ActionChainContext) error {
 	l, err := GetLoopActionData(a)
 	if err != nil {
 		return err
@@ -96,7 +96,7 @@ func (a *Action) ExecLoop(ctx *Context) error {
 		if err != nil {
 			return fmt.Errorf("error evaluating condition: %v", err)
 		}
-		if conditionMet {
+		if !conditionMet {
 			break
 		}
 	}

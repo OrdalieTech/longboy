@@ -320,7 +320,7 @@ func (c *LLMClient) handleNonStreamingResponse(body io.ReadCloser, responseChan 
 	}
 }
 
-func (a *Action) ExecLLM(ctx *Context) error {
+func (a *Action) ExecLLM(ctx *ActionChainContext) error {
 	l, err := GetLLMActionData(a)
 	if err != nil {
 		return err

@@ -83,7 +83,7 @@ func ActivateActionChain(db *gorm.DB, id string) error {
 	}
 	// Start the action chain in a new goroutine
 
-	ctx := &models.Context{Results: make(map[string]interface{})}
+	ctx := &models.ActionChainContext{Results: make(map[string]interface{})}
 
 	// Keep the trigger always active
 	log.Printf("Executing trigger: %v", chain.Trigger)

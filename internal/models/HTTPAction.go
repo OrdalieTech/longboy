@@ -60,7 +60,7 @@ func HTTPActionDataToMetadata(data *HTTPActionData) map[string]interface{} {
 	}
 }
 
-func (a *Action) ExecHTTP(ctx *Context) error {
+func (a *Action) ExecHTTP(ctx *ActionChainContext) error {
 	client := &http.Client{}
 
 	h, err := GetHTTPActionData(a)
