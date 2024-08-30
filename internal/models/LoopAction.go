@@ -55,7 +55,6 @@ func GetLoopActionData(a *Action) (*LoopActionData, error) {
 				return nil, fmt.Errorf("placeholder value is not in the expected format")
 			}
 		}
-		// Add more fields as necessary
 		action.Metadata = actionMap["metadata"].(map[string]interface{})
 		data.Action = action
 	}

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,6 +16,8 @@ import (
 
 	"gorm.io/gorm"
 )
+
+var ActivationContext context.Context
 
 type ActionChainContext struct {
 	Results map[string]interface{} `json:"results" gorm:"serializer:json"`
@@ -55,7 +58,7 @@ func (d Description) Print() {
 
 type ActionChain struct {
 	ID          string              `json:"id" gorm:"primaryKey"`
-	Trigger     *Trigger            `json:"trigger" gorm:"serializer:json"`
+	Trigger     *Trigger            `json:"trigger" gorm:"embedded"`
 	Context     *ActionChainContext `json:"context" gorm:"serializer:json"`
 	Description *Description        `json:"description" gorm:"serializer:json"`
 	Active      bool                `json:"active" gorm:"default:false"`
@@ -71,6 +74,7 @@ type Trigger struct {
 	ResultID          string            `json:"result_id,omitempty" gorm:"type:varchar(100)"`
 	FollowingActionID string            `json:"following_action_id,omitempty" gorm:"type:varchar(100)"`
 	Description       *Description      `json:"description" gorm:"serializer:json"`
+	StopChan          chan struct{}     `json:"-" gorm:"-"`
 }
 
 func getActionByID(db *gorm.DB, id string) (Action, error) {
@@ -80,6 +84,7 @@ func getActionByID(db *gorm.DB, id string) (Action, error) {
 }
 
 func (t *Trigger) Exec(ctx *ActionChainContext, db *gorm.DB) error {
+	t.StopChan = make(chan struct{})
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		parsedURL, _ := url.Parse(t.URL)
@@ -152,7 +157,19 @@ func (t *Trigger) Exec(ctx *ActionChainContext, db *gorm.DB) error {
 		Handler: mux,
 	}
 
-	go server.ListenAndServe()
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Printf("HTTP server ListenAndServe: %v", err)
+		}
+	}()
+
+	go func() {
+		<-t.StopChan
+		log.Println("Shutting down the server...")
+		if err := server.Shutdown(context.Background()); err != nil {
+			log.Printf("HTTP server Shutdown: %v", err)
+		}
+	}()
 
 	return nil
 }

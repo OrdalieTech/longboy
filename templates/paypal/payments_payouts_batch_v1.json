@@ -2,23 +2,8 @@
   {
     "id": "95",
     "type": "http",
-    "description": "Creates a batch payout. In the JSON request body, pass a `sender_batch_header` and an `items` array. The `sender_batch_header` defines how to handle the payout. The `items` array defines the payout items.\u003cbr/\u003eYou can make payouts to one or more recipients.\u003cblockquote\u003e\u003cstrong\u003eNotes:\u003c/strong\u003e \u003cul\u003e\u003cli\u003e\u003cp\u003ePayPal does not process duplicate payouts. If you specify a \u003ccode\u003esender_batch_id\u003c/code\u003e that was used in the last 30 days, the API rejects the request with an error message that shows the duplicate \u003ccode\u003esender_batch_id\u003c/code\u003e and includes a HATEOAS link to the original payout with the same \u003ccode\u003esender_batch_id\u003c/code\u003e.\u003c/p\u003e\u003cp\u003eIf you receive an HTTP \u003ccode\u003e5\u003ci\u003enn\u003c/i\u003e\u003c/code\u003e status code, you can safely retry the request with the same \u003ccode\u003esender_batch_id\u003c/code\u003e.\u003c/p\u003e\u003c/li\u003e\u003cli\u003e\u003cp\u003eThe Payouts API does not support build notation (BN) codes. In a future Payouts release, you can optionally provide BN codes in the \u003ccode\u003ePayPal-Partner-Attribution-Id\u003c/code\u003e request header.\u003c/p\u003e\u003cp\u003eFor information about the \u003ccode\u003ePayPal-Partner-Attribution-Id\u003c/code\u003e header, see \u003ca href=\"/api/rest/requests/#http-request-headers\"\u003eHTTP request headers\u003c/a\u003e. To learn about or request a BN code, contact your partner manager or see \u003ca href=\"https://www.paypal.com/us/webapps/mpp/partner-program\"\u003ePayPal Partner Program\u003c/a\u003e.\u003c/p\u003e\u003c/li\u003e\u003c/ul\u003e\u003c/blockquote\u003e",
-    "result_id": "95",
-    "placeholders": null,
-    "metadata": {
-      "Body": "{\n  \"items\": \"\",\n  \"sender_batch_header\": \"\"\n}",
-      "Headers": {
-        "Content-Type": "application/json"
-      },
-      "Method": "POST",
-      "URL": "https://api-m.sandbox.paypal.com/v1/payments/payouts"
-    }
-  },
-  {
-    "id": "96",
-    "type": "http",
     "description": "Shows the latest status of a batch payout. Includes the transaction status and other data for individual payout items.",
-    "result_id": "96",
+    "result_id": "95",
     "placeholders": null,
     "metadata": {
       "Body": "",
@@ -30,10 +15,10 @@
     }
   },
   {
-    "id": "97",
+    "id": "96",
     "type": "http",
     "description": "Shows details for a payout item, by ID. A \u003ccode\u003epayout_item_id\u003c/code\u003e helps you identify denied payments. If a payment is denied, you can use the \u003ccode\u003epayout_item_id\u003c/code\u003e to identify the payment even if it lacks a \u003ccode\u003etransaction_id\u003c/code\u003e.",
-    "result_id": "97",
+    "result_id": "96",
     "placeholders": null,
     "metadata": {
       "Body": "",
@@ -45,10 +30,10 @@
     }
   },
   {
-    "id": "98",
+    "id": "97",
     "type": "http",
     "description": "Cancels an unclaimed payout item, by ID. If no one claims the unclaimed item within 30 days, the API automatically returns the funds to the sender. Use this call to cancel the unclaimed item before the automatic 30-day refund. You can cancel payout items with a \u003ccode\u003etransaction_status\u003c/code\u003e of \u003ccode\u003eUNCLAIMED\u003c/code\u003e.",
-    "result_id": "98",
+    "result_id": "97",
     "placeholders": null,
     "metadata": {
       "Body": "",
@@ -57,6 +42,21 @@
       },
       "Method": "POST",
       "URL": "https://api-m.sandbox.paypal.com/v1/payments/payouts-item/{payout_item_id}/cancel"
+    }
+  },
+  {
+    "id": "98",
+    "type": "http",
+    "description": "Creates a batch payout. In the JSON request body, pass a `sender_batch_header` and an `items` array. The `sender_batch_header` defines how to handle the payout. The `items` array defines the payout items.\u003cbr/\u003eYou can make payouts to one or more recipients.\u003cblockquote\u003e\u003cstrong\u003eNotes:\u003c/strong\u003e \u003cul\u003e\u003cli\u003e\u003cp\u003ePayPal does not process duplicate payouts. If you specify a \u003ccode\u003esender_batch_id\u003c/code\u003e that was used in the last 30 days, the API rejects the request with an error message that shows the duplicate \u003ccode\u003esender_batch_id\u003c/code\u003e and includes a HATEOAS link to the original payout with the same \u003ccode\u003esender_batch_id\u003c/code\u003e.\u003c/p\u003e\u003cp\u003eIf you receive an HTTP \u003ccode\u003e5\u003ci\u003enn\u003c/i\u003e\u003c/code\u003e status code, you can safely retry the request with the same \u003ccode\u003esender_batch_id\u003c/code\u003e.\u003c/p\u003e\u003c/li\u003e\u003cli\u003e\u003cp\u003eThe Payouts API does not support build notation (BN) codes. In a future Payouts release, you can optionally provide BN codes in the \u003ccode\u003ePayPal-Partner-Attribution-Id\u003c/code\u003e request header.\u003c/p\u003e\u003cp\u003eFor information about the \u003ccode\u003ePayPal-Partner-Attribution-Id\u003c/code\u003e header, see \u003ca href=\"/api/rest/requests/#http-request-headers\"\u003eHTTP request headers\u003c/a\u003e. To learn about or request a BN code, contact your partner manager or see \u003ca href=\"https://www.paypal.com/us/webapps/mpp/partner-program\"\u003ePayPal Partner Program\u003c/a\u003e.\u003c/p\u003e\u003c/li\u003e\u003c/ul\u003e\u003c/blockquote\u003e",
+    "result_id": "98",
+    "placeholders": null,
+    "metadata": {
+      "Body": "{\n  \"items\": \"\",\n  \"sender_batch_header\": \"\"\n}",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v1/payments/payouts"
     }
   }
 ]

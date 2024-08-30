@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"sync"
@@ -10,6 +11,8 @@ import (
 
 	models "longboy/internal/models"
 )
+
+type chainIDKey string
 
 var (
 	actionIDCounter int
@@ -34,6 +37,7 @@ func InitDB(dbPath string) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	models.ActivationContext = context.Background()
 
 	return db, nil
 }
@@ -93,11 +97,23 @@ func ActivateActionChain(db *gorm.DB, id string) error {
 		// Optionally, handle the error, e.g., retry, backoff, etc.
 	}
 
+	models.ActivationContext = context.WithValue(models.ActivationContext, chainIDKey(chain.ID), chain)
+
 	return nil
 }
 
 // DeactivateActionChain sets the action chain as inactive
 func DeactivateActionChain(db *gorm.DB, id string) error {
+	var chain models.ActionChain
+	chain, ok := models.ActivationContext.Value(chainIDKey(id)).(models.ActionChain)
+	if !ok {
+		return fmt.Errorf("action chain with ID %s not found in activation context", id)
+	}
+
+	if chain.Trigger != nil && chain.Trigger.StopChan != nil {
+		close(chain.Trigger.StopChan)
+	}
+
 	return db.Model(&models.ActionChain{}).Where("id = ?", id).Update("active", false).Error
 }
 

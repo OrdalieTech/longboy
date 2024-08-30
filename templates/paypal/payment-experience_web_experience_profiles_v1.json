@@ -2,7 +2,7 @@
   {
     "id": "82",
     "type": "http",
-    "description": "Updates a web experience profile, by ID. In the JSON request body, specify the profile details. If your request omits any profile parameters, any previously set values for those parameters are removed.",
+    "description": "Lists the latest 20 web experience profiles for a merchant or subject. To show details for these or additional profiles, you can show web experience profile details by ID.",
     "result_id": "82",
     "placeholders": null,
     "metadata": {
@@ -10,15 +10,30 @@
       "Headers": {
         "Content-Type": "application/json"
       },
-      "Method": "PUT",
-      "URL": "https://api-m.sandbox.paypal.com/v1/payment-experience/web-profiles/{id}"
+      "Method": "GET",
+      "URL": "https://api-m.sandbox.paypal.com/v1/payment-experience/web-profiles"
     }
   },
   {
     "id": "83",
     "type": "http",
-    "description": "Partially-updates a web experience profile, by ID. In the JSON request body, specify a patch object, the path of the profile location to update, and a new value.",
+    "description": "Creates a web experience profile. In the JSON request body, specify the profile name and details.",
     "result_id": "83",
+    "placeholders": null,
+    "metadata": {
+      "Body": "",
+      "Headers": {
+        "Content-Type": "application/json"
+      },
+      "Method": "POST",
+      "URL": "https://api-m.sandbox.paypal.com/v1/payment-experience/web-profiles"
+    }
+  },
+  {
+    "id": "84",
+    "type": "http",
+    "description": "Partially-updates a web experience profile, by ID. In the JSON request body, specify a patch object, the path of the profile location to update, and a new value.",
+    "result_id": "84",
     "placeholders": null,
     "metadata": {
       "Body": "{}",
@@ -30,10 +45,10 @@
     }
   },
   {
-    "id": "84",
+    "id": "85",
     "type": "http",
     "description": "Shows details for a web experience profile, by ID.",
-    "result_id": "84",
+    "result_id": "85",
     "placeholders": null,
     "metadata": {
       "Body": "",
@@ -45,10 +60,10 @@
     }
   },
   {
-    "id": "85",
+    "id": "86",
     "type": "http",
     "description": "Deletes a web experience profile, by ID.",
-    "result_id": "85",
+    "result_id": "86",
     "placeholders": null,
     "metadata": {
       "Body": "",
@@ -60,24 +75,9 @@
     }
   },
   {
-    "id": "86",
-    "type": "http",
-    "description": "Lists the latest 20 web experience profiles for a merchant or subject. To show details for these or additional profiles, you can show web experience profile details by ID.",
-    "result_id": "86",
-    "placeholders": null,
-    "metadata": {
-      "Body": "",
-      "Headers": {
-        "Content-Type": "application/json"
-      },
-      "Method": "GET",
-      "URL": "https://api-m.sandbox.paypal.com/v1/payment-experience/web-profiles"
-    }
-  },
-  {
     "id": "87",
     "type": "http",
-    "description": "Creates a web experience profile. In the JSON request body, specify the profile name and details.",
+    "description": "Updates a web experience profile, by ID. In the JSON request body, specify the profile details. If your request omits any profile parameters, any previously set values for those parameters are removed.",
     "result_id": "87",
     "placeholders": null,
     "metadata": {
@@ -85,8 +85,8 @@
       "Headers": {
         "Content-Type": "application/json"
       },
-      "Method": "POST",
-      "URL": "https://api-m.sandbox.paypal.com/v1/payment-experience/web-profiles"
+      "Method": "PUT",
+      "URL": "https://api-m.sandbox.paypal.com/v1/payment-experience/web-profiles/{id}"
     }
   }
 ]
