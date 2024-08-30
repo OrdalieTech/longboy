@@ -363,7 +363,7 @@ func (a *Action) ProcessBody(ctx *Context, body string) (string, error) {
 			return string(jsonBytes)
 		}
 	})
-	fmt.Printf("Body before processing: %s\n", body)
+	// fmt.Printf("Body before processing: %s\n", body)
 
 	return body, nil
 }

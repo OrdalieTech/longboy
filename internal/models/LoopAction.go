@@ -82,7 +82,7 @@ func (a *Action) ExecLoop(ctx *Context) error {
 		return err
 	}
 	for {
-		fmt.Printf("Action: %+v\n", l.Action)
+		// fmt.Printf("Action: %+v\n", l.Action)
 		// Execute the action
 		if err := l.Action.Exec(ctx); err != nil {
 			return fmt.Errorf("error executing action: %v", err)

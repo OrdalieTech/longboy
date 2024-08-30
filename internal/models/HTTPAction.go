@@ -135,7 +135,7 @@ func (a *Action) ExecHTTP(ctx *Context) error {
 			ctx.Results[a.ResultID] = jsonData
 		}
 
-		fmt.Printf("Stored in ctx.Results[%s]: %+v\n", a.ResultID, ctx.Results[a.ResultID])
+		// fmt.Printf("Stored in ctx.Results[%s]: %+v\n", a.ResultID, ctx.Results[a.ResultID])
 	}
 
 	return nil

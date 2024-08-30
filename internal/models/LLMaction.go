@@ -186,8 +186,8 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 		defer close(responseChan)
 		defer close(errChan)
 
-		log.Printf("Starting completion attempt with %d models", len(request.Models))
-		log.Printf("Base URL: %s", c.baseURL)
+		// log.Printf("Starting completion attempt with %d models", len(request.Models))
+		// log.Printf("Base URL: %s", c.baseURL)
 
 		for _, model := range request.Models {
 			select {
@@ -195,7 +195,7 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 				errChan <- ctx.Err()
 				return
 			default:
-				log.Printf("Attempting completion with model: %s", model)
+				// log.Printf("Attempting completion with model: %s", model)
 
 				requestBody := map[string]interface{}{
 					"model":       model,
@@ -223,7 +223,7 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 				req.Header.Set("api-key", c.apiKey)
 				req.Header.Set("Content-Type", "application/json")
 
-				log.Printf("Sending request for model %s", model)
+				// log.Printf("Sending request for model %s", model)
 				resp, err := c.httpClient.Do(req)
 				if err != nil {
 					log.Printf("Error making request for model %s: %v", model, err)
@@ -232,7 +232,7 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 				}
 				defer resp.Body.Close()
 
-				log.Printf("Received response for model %s with status code: %d", model, resp.StatusCode)
+				// log.Printf("Received response for model %s with status code: %d", model, resp.StatusCode)
 
 				if resp.StatusCode != http.StatusOK {
 					body, _ := io.ReadAll(resp.Body)
@@ -241,7 +241,7 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 					continue
 				}
 
-				log.Printf("Successfully received response for model %s", model)
+				// log.Printf("Successfully received response for model %s", model)
 
 				if request.Stream {
 					c.handleStreamingResponse(resp.Body, responseChan, errChan)
@@ -252,7 +252,7 @@ func (c *LLMClient) Completion(ctx context.Context, request ChatCompletionReques
 			}
 		}
 
-		log.Printf("All models failed")
+		// log.Printf("All models failed")
 		errChan <- fmt.Errorf("all models failed")
 	}()
 
@@ -325,12 +325,12 @@ func (a *Action) ExecLLM(ctx *Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("LLMAction: %+v\n", l)
+	// fmt.Printf("LLMAction: %+v\n", l)
 	l.LLMClient = *NewLLMClient(ClientConfig{
 		Provider:       l.Provider,
 		DeploymentName: l.DeploymentName,
 	})
-	fmt.Printf("LLMClient: %+v\n", l.LLMClient)
+	// fmt.Printf("LLMClient: %+v\n", l.LLMClient)
 
 	for i := range l.ChatCompletionRequest.Messages {
 		body := l.ChatCompletionRequest.Messages[i].Content
@@ -339,14 +339,14 @@ func (a *Action) ExecLLM(ctx *Context) error {
 			return err
 		}
 		l.ChatCompletionRequest.Messages[i].Content = body
-		fmt.Printf("Message %d: %s\n", i, l.ChatCompletionRequest.Messages[i].Content)
+		// fmt.Printf("Message %d: %s\n", i, l.ChatCompletionRequest.Messages[i].Content)
 	}
-	fmt.Printf("ChatCompletionRequest: %+v\n", l.ChatCompletionRequest)
+	// fmt.Printf("ChatCompletionRequest: %+v\n", l.ChatCompletionRequest)
 	respChan, errChan := l.Completion(context.Background(), l.ChatCompletionRequest)
 
 	select {
 	case responseTxt := <-respChan:
-		fmt.Printf("Response: %s\n", responseTxt)
+		// fmt.Printf("Response: %s\n", responseTxt)
 		ctx.Results[a.ResultID] = responseTxt
 		return nil
 	case err := <-errChan:
